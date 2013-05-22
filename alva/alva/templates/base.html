@@ -1,5 +1,7 @@
 {% load account %}
 {% load bootstrap_toolkit %}
+<!DOCTYPE html>
+<html>
 <head>
     {% bootstrap_stylesheet_tag %}
     {% bootstrap_stylesheet_tag "responsive" %}
@@ -16,15 +18,16 @@
     {% block extra_head %}{% endblock %}
 </head>
 <body>
-
 <div class="navbar navbar-fixed-top">
     <div class="navbar-inner">
         <div class="container">
             <a class="brand" href="/">Done With Nikola</a>
+            {% if user.is_authenticated %}
             <ul class="nav pull-right">
                 <li><a href="#">Logged in as {% user_display user %}</a></li>
                 <li><a href="{% url 'account_logout' %}" class="">Logout</a></li>
             </ul>
+            {% endif %}
         </div>
     </div>
 </div>
@@ -49,6 +52,5 @@
     </footer>
 
 </div> <!-- container -->
-
 </body>
 </html>
