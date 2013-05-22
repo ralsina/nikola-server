@@ -15,6 +15,7 @@ class Blog(models.Model):
     domain = models.CharField(max_length=64, unique=True)
     description = models.TextField(max_length=500, default="")
     language = models.CharField(max_length=9, choices=LANGUAGE_CHOICES)
+    dirty = models.BooleanField(default=False)
 
 class Post(models.Model):
     author = models.ForeignKey(User)
@@ -25,6 +26,7 @@ class Post(models.Model):
     date = models.DateTimeField(auto_now_add=True)
     tags = models.CharField(max_length=512)
     description = models.TextField(max_length=1024)
+    dirty = models.BooleanField(default=False)
 
 class Story(Post):
     pass
