@@ -17,9 +17,38 @@
 </head>
 <body>
 
-Logged in as: {% user_display user %} <a href="/accounts/logout">Signout</a>
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container">
+            <a class="brand" href="/">Done With Nikola</a>
+            <ul class="nav pull-right">
+                <li><a href="#">Logged in as {% user_display user %}</a></li>
+                <li><a href="{% url 'account_logout' %}" class="">Logout</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
 
-<hr>
-{% block content %}
-{% endblock %}
+<div class="container">
+
+    {% bootstrap_messages %}
+
+    {% block content %}Empty page{% endblock %}
+
+    <p><hr></p>
+
+    <footer class="row">
+        <div class="span6">
+            <p>This is <a href="https://donewithniko.la">Done With Nikola</a></p>
+        </div>
+        <div class="span6" style="text-align:right">
+            <p>
+                &copy; <a href="http://ralsina.com.ar">Roberto Alsina</a> 2013
+            </p>
+        </div>
+    </footer>
+
+</div> <!-- container -->
+
 </body>
+</html>

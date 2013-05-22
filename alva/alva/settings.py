@@ -1,5 +1,9 @@
 # Django settings for alva project.
 
+import os
+
+PROJECT_ROOT = os.path.normpath(os.path.dirname(os.path.abspath(__file__)))
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -93,6 +97,7 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -132,6 +137,7 @@ INSTALLED_APPS = (
 
     'django_rq',
     'bootstrap_toolkit',
+    'debug_toolbar',
 
     'blogs',
 
@@ -196,3 +202,5 @@ RQ_QUEUES = {
 }
 
 RQ_SHOW_ADMIN_LINK = True
+
+INTERNAL_IPS = ('127.0.0.1',)
