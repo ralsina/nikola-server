@@ -4,10 +4,12 @@ from django.conf.urls import patterns, include, url
 from django.contrib import admin
 admin.autodiscover()
 
+
+import blogs.views as blog_views
+
 urlpatterns = patterns('',
     (r'^accounts/', include('allauth.urls')),
-    url(r'^$', 'blogs.views.home', name='home'),
-    # url(r'^alva/', include('alva.foo.urls')),
+    url(r'^$', blog_views.ProfileView.as_view(), name='profile'),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
