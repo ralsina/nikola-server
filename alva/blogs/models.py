@@ -13,6 +13,7 @@ class Blog(models.Model):
     members = models.ManyToManyField(User, related_name="member_of")
     name = models.CharField(max_length=64, unique=True)
     domain = models.CharField(max_length=64, unique=True)
+    title = models.CharField(max_length=128, unique=True)
     description = models.TextField(max_length=500, default="")
     language = models.CharField(max_length=9, choices=LANGUAGE_CHOICES)
     dirty = models.BooleanField(default=False)
@@ -30,3 +31,4 @@ class Post(models.Model):
 
 class Story(Post):
     pass
+
