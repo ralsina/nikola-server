@@ -22,7 +22,7 @@ class Blog(models.Model):
     owner = models.ForeignKey(User, related_name="owner_of")
     members = models.ManyToManyField(User, related_name="member_of")
     name = models.CharField(max_length=64, unique=True)
-    domain = models.CharField(max_length=64, unique=True, blank=True)
+    domain = models.CharField(max_length=64, blank=True)
     title = models.CharField(max_length=128, unique=True)
     description = models.TextField(max_length=500, blank=True)
     language = models.CharField(max_length=9, choices=LANGUAGE_CHOICES)
@@ -48,6 +48,8 @@ class Blog(models.Model):
         self.dirty = True
         return r
 
+    def __unicode__(self):
+        return self.title
 
 class Post(models.Model):
     author = models.ForeignKey(User)

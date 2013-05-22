@@ -1,1 +1,23 @@
-Foobar
+{% extends "blogs/base.html" %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+{% if user.owner_of.all or user.member_of.all %}
+    Your blogs:
+    <ul>
+    {% for blog in user.owner_of.all %}
+        <li>{{blog}} [owner] <a href="#">New Post</a> <a href="#">Admin</a></li>
+    {% endfor %}
+    {% for blog in user.member_of.all %}
+        {% if blog not in user.owner_of.all %}
+            <li>{{blog}} [member]<a href="#">New Post</a> </li>
+        {% endif %}
+    {% endfor %}
+    </ul>
+{% else %}
+    You can't post in any blogs yet.
+{% endif %}
+
+<a href="#">Create A New Blog</a>
+{% endblock %}

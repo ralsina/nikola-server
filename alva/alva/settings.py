@@ -131,6 +131,7 @@ INSTALLED_APPS = (
     'allauth.socialaccount.providers.twitter',
 
     'django_rq',
+    'bootstrap_toolkit',
 
     'blogs',
 
