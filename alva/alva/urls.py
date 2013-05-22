@@ -6,7 +6,7 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     # Examples:
-    # url(r'^$', 'alva.views.home', name='home'),
+    url(r'^$', 'blogs.views.home', name='home'),
     # url(r'^alva/', include('alva.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
