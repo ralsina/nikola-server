@@ -193,3 +193,5 @@ RQ_QUEUES = {
         'DB': 0,
     },
 }
+
+RQ_SHOW_ADMIN_LINK = True
