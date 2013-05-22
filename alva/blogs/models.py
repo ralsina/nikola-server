@@ -38,12 +38,15 @@ class Blog(models.Model):
             return self.name+".donewithniko.la"
 
     def save(self, *args, **kwargs):
+        build = kwargs.pop("build", True)
+        r=super(Blog, self).save(*args, **kwargs)
         if not os.path.isdir(self.path()):
             init_blog.delay(self)
         save_blog_config.delay(self)
-        build_blog.delay(self)
+        if build:
+            build_blog.delay(self)
         self.dirty = True
-        return super(Blog, self).save(*args, **kwargs)
+        return r
 
 
 class Post(models.Model):
@@ -56,8 +59,32 @@ class Post(models.Model):
     tags = models.CharField(max_length=512)
     description = models.TextField(max_length=1024)
 
+    folder = "posts"
+
+    def path(self, blog):
+        return os.path.join(blog.path(), self.folder, "%d.txt" % self.id)
+
+    def save(self, *args, **kwargs):
+        r = super(Post, self).save(*args, **kwargs)
+        for blog in self.blogs.all():
+            with codecs.open(self.path(blog), "wb+", "utf8") as f:
+                template = loader.get_template('blogs/post.tmpl')
+                context = Context(dict(
+                    TITLE=self.title,
+                    DESCRIPTION=self.description,
+                    DATE=self.date.strftime('%Y/%m/%d %H:%M'),
+                    SLUG=self.slug,
+                    TAGS=self.tags,
+                    AUTHOR=" ".join([self.author.first_name, self.author.last_name]),
+                    TEXT=self.text,
+                    ))
+                data = template.render(context)
+                f.write(data)
+        return r
+
 class Story(Post):
-    pass
+
+    folder = "stories"
 
 
 # Tasks that are delegated to RQ
@@ -82,15 +109,14 @@ def save_blog_config(blog):
             DEFAULT_LANG=blog.language,
             ))
         data = template.render(context)
-        print(data)
         f.write(data)
 
 @django_rq.job
 def build_blog(blog):
     with cd(blog.path()):
         os.system("nikola build")
-        blog.dirty = False
-        blog.save()
+    blog.dirty = False
+    blog.save(build=False)
 
 # Utility thingies
 
