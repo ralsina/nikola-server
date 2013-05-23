@@ -23,7 +23,7 @@ class BlogUpdate(UpdateView):
 
 class BlogDelete(DeleteView):
     model = Blog
-    success_url = reverse_lazy('profile ')
+    success_url = reverse_lazy('profile')
 
 class ProfileView(TemplateView):
 
