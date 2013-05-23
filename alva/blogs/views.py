@@ -35,9 +35,9 @@ class PostCreate(CreateView):
     model = Post
     success_url = reverse_lazy('profile')
 
-    #def form_valid(self, form):
-        #form.instance.owner = self.request.user
-        #return super(BlogCreate, self).form_valid(form)
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super(BlogCreate, self).form_valid(form)
 
 class PostUpdate(UpdateView):
     model = Post
