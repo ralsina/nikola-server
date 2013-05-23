@@ -20,6 +20,7 @@ class BlogCreate(CreateView):
         return super(BlogCreate, self).form_valid(form)
 
 class BlogUpdate(UpdateView):
+    form_class = BlogForm
     model = Blog
     success_url = reverse_lazy('profile')
 
@@ -40,11 +41,12 @@ class PostCreate(CreateView):
         return super(PostCreate, self).form_valid(form)
 
 class PostUpdate(UpdateView):
+    form_class = PostForm
     model = Post
     success_url = reverse_lazy('profile')
 
 class PostDelete(DeleteView):
-    model = Blog
+    model = Post
     success_url = reverse_lazy('profile')
 
 

@@ -88,6 +88,9 @@ class Post(models.Model):
         self._save_to_disk()
         return r
 
+    def __unicode__(self):
+        return "{0} ({1})".format(self.title, self.date.strftime('%Y-%m-%d %H:%M'))
+
 class Story(Post):
 
     folder = "stories"

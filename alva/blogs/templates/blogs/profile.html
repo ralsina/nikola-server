@@ -4,7 +4,7 @@
 
 {% block content %}
 {% if user.owner_of.all or user.member_of.all %}
-    Your blogs:
+    <h2>Your blogs:</h2>
     <ul>
     {% for blog in user.owner_of.all %}
         <li>{{blog}} [owner]
@@ -22,6 +22,22 @@
 {% else %}
     You can't post in any blogs yet.
 {% endif %}
-
 <a href="{% url "blog_add" %}">Create A New Blog</a>
+
+<hr>
+
+{% if user.post_set.all %}
+    <h2>Your posts:</h2>
+    <ul>
+    {% for post in user.post_set.all %}
+        <li>
+        <a href="{% url "post_update" pk=post.id%}">{{post}}</a> |
+        <a href="{% url "post_delete" pk=post.id%}">Delete</a>
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    You have not posted anything yet.
+{% endif %}
+
 {% endblock %}
