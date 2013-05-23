@@ -11,8 +11,10 @@ urlpatterns = patterns('',
     (r'^accounts/', include('allauth.urls')),
     url(r'^$', blog_views.ProfileView.as_view(), name='profile'),
 
-    # Uncomment the admin/doc line below to enable admin documentation:
-    # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
+    # Blog CRUD
+    url(r'^blog/add/$', blog_views.BlogCreate.as_view(), name='blog_add'),
+    url(r'^blog/(?P<pk>\d+)/$', blog_views.BlogUpdate.as_view(), name='blog_update'),
+    url(r'^blog/(?P<pk>\d+)/delete/$', blog_views.BlogDelete.as_view(), name='blog_delete'),
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
