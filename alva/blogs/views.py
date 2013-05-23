@@ -37,7 +37,7 @@ class PostCreate(CreateView):
 
     def form_valid(self, form):
         form.instance.author = self.request.user
-        return super(BlogCreate, self).form_valid(form)
+        return super(PostCreate, self).form_valid(form)
 
 class PostUpdate(UpdateView):
     model = Post
