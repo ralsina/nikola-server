@@ -56,9 +56,9 @@ class Post(models.Model):
     blogs = models.ManyToManyField(Blog)
     title = models.CharField(max_length=128)
     slug = models.CharField(max_length=128)
-    text = models.TextField(max_length=100000, blank=True)
     date = models.DateTimeField(auto_now_add=True)
     tags = models.CharField(max_length=512, blank=True)
+    text = models.TextField(max_length=100000, blank=True)
     description = models.TextField(max_length=1024, blank=True)
 
     folder = "posts"
