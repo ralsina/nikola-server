@@ -7,7 +7,11 @@
     Your blogs:
     <ul>
     {% for blog in user.owner_of.all %}
-        <li>{{blog}} [owner] <a href="#">New Post</a> <a href="{% url "blog_update" pk=blog.id %}">Edit</a> <a href="{% url "blog_delete" pk=blog.id %}">Delete</a></li>
+        <li>{{blog}} [owner]
+            <a href="{% url "post_add" blog_id=blog.id %}">New Post</a> |
+            <a href="{% url "blog_update" pk=blog.id %}">Edit</a> |
+            <a href="{% url "blog_delete" pk=blog.id %}">Delete</a>
+        </li>
     {% endfor %}
     {% for blog in user.member_of.all %}
         {% if blog not in user.owner_of.all %}

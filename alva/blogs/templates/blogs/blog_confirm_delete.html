@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<form action="#" method="post">{% csrf_token %}
+Are you sure you want to delete the blog <b>"{{object}}"</b>
+
+<input type="submit" value="Yes" /></li>
+<a href="{% url "profile" %}">No</a></li>
+</form>
+
+{% endblock %}
