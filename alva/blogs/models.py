@@ -66,8 +66,8 @@ class Post(models.Model):
     def path(self, blog):
         return os.path.join(blog.path(), self.folder, "%d.txt" % self.id)
 
-    def save(self, *args, **kwargs):
-        r = super(Post, self).save(*args, **kwargs)
+    def _save_to_disk(self):
+        # FIXME: self.blogs is empty on creation!
         for blog in self.blogs.all():
             with codecs.open(self.path(blog), "wb+", "utf8") as f:
                 template = loader.get_template('blogs/post.tmpl')
@@ -82,6 +82,10 @@ class Post(models.Model):
                     ))
                 data = template.render(context)
                 f.write(data)
+
+    def save(self, *args, **kwargs):
+        r = super(Post, self).save(*args, **kwargs)
+        self._save_to_disk()
         return r
 
 class Story(Post):
