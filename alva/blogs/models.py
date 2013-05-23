@@ -38,11 +38,13 @@ class Blog(models.Model):
             return self.name+".donewithniko.la"
 
     def save(self, *args, **kwargs):
+        build = kwargs.pop("build", True)
         r=super(Blog, self).save(*args, **kwargs)
         if not os.path.isdir(self.path()):
             init_blog.delay(self.id)
         save_blog_config.delay(self.id)
-        build_blog.delay(self.id)
+        if build:
+            build_blog.delay(self.id)
         self.dirty = True
         return r
 
@@ -54,10 +56,10 @@ class Post(models.Model):
     blogs = models.ManyToManyField(Blog)
     title = models.CharField(max_length=128)
     slug = models.CharField(max_length=128)
-    text = models.TextField(max_length=100000)
+    text = models.TextField(max_length=100000, blank=True)
     date = models.DateTimeField(auto_now_add=True)
-    tags = models.CharField(max_length=512)
-    description = models.TextField(max_length=1024)
+    tags = models.CharField(max_length=512, blank=True)
+    description = models.TextField(max_length=1024, blank=True)
 
     folder = "posts"
 
@@ -92,13 +94,13 @@ class Story(Post):
 @django_rq.job
 def init_blog(blog_id):
     """Create the initial structure of the blog."""
-    blog = Blog.objects.get_by_id(blog_id)
+    blog = Blog.objects.get(id=blog_id)
     blog_path = os.path.join("/tmp", blog.name)
     os.system("nikola init {0}".format(blog_path))
 
 @django_rq.job
 def save_blog_config(blog_id):
-    blog = Blog.objects.get_by_id(blog_id)
+    blog = Blog.objects.get(id=blog_id)
     config_path = os.path.join(blog.path(), "conf.py")
     with codecs.open(config_path, "wb+", "utf-8") as f:
         template = loader.get_template('blogs/conf.tmpl')
@@ -115,7 +117,7 @@ def save_blog_config(blog_id):
 
 @django_rq.job
 def build_blog(blog_id):
-    blog = Blog.objects.get_by_id(blog_id)
+    blog = Blog.objects.get(id=blog_id)
     with cd(blog.path()):
         os.system("nikola build")
     blog.dirty = False
