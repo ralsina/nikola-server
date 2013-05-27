@@ -3,9 +3,9 @@
 
 {% block content %}
 <form class="form-horizontal" action="#" method="post">{% csrf_token %}
-    {% bootstrap_form form layout="horizontal" %}
+    {% bootstrap_form form layout="horizontal"%}
  <div class="form-actions">
-   <button type="submit" class="btn btn-primary">Submit</button>
+   <button type="submit" class="btn btn-primary pull-right">Submit</button>
  </div>
 </form>
 {% endblock %}
