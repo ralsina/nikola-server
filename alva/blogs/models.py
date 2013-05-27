@@ -15,7 +15,9 @@ LANGUAGE_CHOICES = (
     ('es', 'Spanish'),
 )
 
-BASE_BLOG_PATH = "/tmp"
+BASE_BLOG_PATH = "/home/ralsina/server/blogs"
+BASE_OUTPUT_PATH = "/home/ralsina/server/sites"
+URL_SUFFIX = ".donewithniko.la:80"
 
 
 class Blog(models.Model):
@@ -30,6 +32,9 @@ class Blog(models.Model):
 
     def path(self):
         return os.path.join(BASE_BLOG_PATH, self.name)
+
+    def output_path(self):
+        return os.path.join(BASE_OUTPUT_PATH, self.name + URL_SUFFIX)
 
     def url(self):
         if self.domain:
@@ -63,22 +68,22 @@ class Post(models.Model):
     class Meta:
         unique_together = (('slug', 'blog'),)
 
-    def path(self, blog):
-        return os.path.join(blog.path(), self.folder, "%d.txt" % self.id)
+    def path(self):
+        return os.path.join(self.blog.path(), self.folder, "%d.txt" % self.id)
 
     def _save_to_disk(self):
-        with codecs.open(self.path(self.blog), "wb+", "utf8") as f:
-            template = loader.get_template('blogs/post.tmpl')
-            context = Context(dict(
-                TITLE=self.title,
-                DESCRIPTION=self.description,
-                DATE=self.date.strftime('%Y/%m/%d %H:%M'),
-                SLUG=self.slug,
-                TAGS=self.tags,
-                AUTHOR=" ".join([self.author.first_name, self.author.last_name]),
-                TEXT=self.text,
-                ))
-            data = template.render(context)
+        template = loader.get_template('blogs/post.tmpl')
+        context = Context(dict(
+            TITLE=self.title,
+            DESCRIPTION=self.description,
+            DATE=self.date.strftime('%Y/%m/%d %H:%M'),
+            SLUG=self.slug,
+            TAGS=self.tags,
+            AUTHOR=" ".join([self.author.first_name, self.author.last_name]),
+            TEXT=self.text,
+            ))
+        data = template.render(context)
+        with codecs.open(self.path(), "wb+", "utf8") as f:
             f.write(data)
 
     def save(self, *args, **kwargs):
@@ -100,8 +105,7 @@ class Story(Post):
 def init_blog(blog_id):
     """Create the initial structure of the blog."""
     blog = Blog.objects.get(id=blog_id)
-    blog_path = os.path.join("/tmp", blog.name)
-    os.system("nikola init {0}".format(blog_path))
+    os.system("nikola init {0}".format(blog.path()))
 
 @django_rq.job
 def save_blog_config(blog_id):
@@ -116,6 +120,7 @@ def save_blog_config(blog_id):
             BLOG_EMAIL=blog.owner.email,
             BLOG_DESCRIPTION=blog.description,
             DEFAULT_LANG=blog.language,
+            OUTPUT_FOLDER=blog.output_path(),
             ))
         data = template.render(context)
         f.write(data)
@@ -133,24 +138,26 @@ def blog_sync(blog_id):
 
     post_ids = set([])
     for post in blog.post_set.all():
-        if post.dirty or not os.path.exists(post.path(post.blog)):
+        if post.dirty or not os.path.exists(post.path()):
             needs_build = True
             post.dirty=False
             post.save()
-            post_ids.add(post.id)
+            post_ids.add(str(post.id))
     post_folder = os.path.join(blog.path(), Post.folder)
     for fname in os.listdir(post_folder):
         if fname.split('.')[0] not in post_ids:
             needs_build = True
             os.unlink(os.path.join(post_folder, fname))
 
-    build_blog(blog_id)
+    #build_blog(blog_id)
 
 @django_rq.job
 def build_blog(blog_id):
     blog = Blog.objects.get(id=blog_id)
     with cd(blog.path()):
         os.system("nikola build")
+        # This is not yet available on any Nikola release
+        #os.system("nikola check --clean-files")
     blog.dirty = False
     blog.save(build=False)
 
