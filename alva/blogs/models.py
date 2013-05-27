@@ -40,12 +40,8 @@ class Blog(models.Model):
     def save(self, *args, **kwargs):
         build = kwargs.pop("build", True)
         r=super(Blog, self).save(*args, **kwargs)
-        if not os.path.isdir(self.path()):
-            init_blog.delay(self.id)
-        save_blog_config.delay(self.id)
         if build:
-            build_blog.delay(self.id)
-        self.dirty = True
+            blog_sync.delay(self.id)
         return r
 
     def __unicode__(self):
@@ -60,6 +56,7 @@ class Post(models.Model):
     tags = models.CharField(max_length=512, blank=True)
     text = models.TextField(max_length=100000, blank=True)
     description = models.TextField(max_length=1024, blank=True)
+    dirty = models.BooleanField(default=True)
 
     folder = "posts"
 
@@ -122,6 +119,21 @@ def save_blog_config(blog_id):
             ))
         data = template.render(context)
         f.write(data)
+
+@django_rq.job
+def blog_sync(blog_id):
+    """Dump the blog to disk, as smartly as possible."""
+    needs_build = False
+    blog = Blog.objects.get(id=blog_id)
+    if not os.path.isdir(blog.path()):
+        init_blog(blog_id)
+
+    # FIXME: only do this if needed
+    save_blog_config(blog_id)
+
+    for post in blog.post_set.all():
+        print(post)
+    build_blog(blog_id)
 
 @django_rq.job
 def build_blog(blog_id):
