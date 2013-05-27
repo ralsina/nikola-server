@@ -15,8 +15,8 @@ class Migration(SchemaMigration):
             ('name', self.gf('django.db.models.fields.CharField')(unique=True, max_length=64)),
             ('domain', self.gf('django.db.models.fields.CharField')(max_length=64, blank=True)),
             ('title', self.gf('django.db.models.fields.CharField')(unique=True, max_length=128)),
+            ('language', self.gf('django.db.models.fields.CharField')(default=u'en', max_length=9)),
             ('description', self.gf('django.db.models.fields.TextField')(max_length=500, blank=True)),
-            ('language', self.gf('django.db.models.fields.CharField')(max_length=9)),
             ('dirty', self.gf('django.db.models.fields.BooleanField')(default=False)),
         ))
         db.send_create_signal(u'blogs', ['Blog'])
@@ -34,6 +34,7 @@ class Migration(SchemaMigration):
         db.create_table(u'blogs_post', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('author', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
+            ('blog', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['blogs.Blog'])),
             ('title', self.gf('django.db.models.fields.CharField')(max_length=128)),
             ('slug', self.gf('django.db.models.fields.CharField')(max_length=128)),
             ('date', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
@@ -43,14 +44,8 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal(u'blogs', ['Post'])
 
-        # Adding M2M table for field blogs on 'Post'
-        m2m_table_name = db.shorten_name(u'blogs_post_blogs')
-        db.create_table(m2m_table_name, (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('post', models.ForeignKey(orm[u'blogs.post'], null=False)),
-            ('blog', models.ForeignKey(orm[u'blogs.blog'], null=False))
-        ))
-        db.create_unique(m2m_table_name, ['post_id', 'blog_id'])
+        # Adding unique constraint on 'Post', fields ['slug', 'blog']
+        db.create_unique(u'blogs_post', ['slug', 'blog_id'])
 
         # Adding model 'Story'
         db.create_table(u'blogs_story', (
@@ -60,6 +55,9 @@ class Migration(SchemaMigration):
 
 
     def backwards(self, orm):
+        # Removing unique constraint on 'Post', fields ['slug', 'blog']
+        db.delete_unique(u'blogs_post', ['slug', 'blog_id'])
+
         # Deleting model 'Blog'
         db.delete_table(u'blogs_blog')
 
@@ -68,9 +66,6 @@ class Migration(SchemaMigration):
 
         # Deleting model 'Post'
         db.delete_table(u'blogs_post')
-
-        # Removing M2M table for field blogs on 'Post'
-        db.delete_table(db.shorten_name(u'blogs_post_blogs'))
 
         # Deleting model 'Story'
         db.delete_table(u'blogs_story')
@@ -112,16 +107,16 @@ class Migration(SchemaMigration):
             'dirty': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'domain': ('django.db.models.fields.CharField', [], {'max_length': '64', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'language': ('django.db.models.fields.CharField', [], {'max_length': '9'}),
+            'language': ('django.db.models.fields.CharField', [], {'default': "u'en'", 'max_length': '9'}),
             'members': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "u'member_of'", 'symmetrical': 'False', 'to': u"orm['auth.User']"}),
             'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '64'}),
             'owner': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "u'owner_of'", 'to': u"orm['auth.User']"}),
             'title': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '128'})
         },
         u'blogs.post': {
-            'Meta': {'object_name': 'Post'},
+            'Meta': {'unique_together': "((u'slug', u'blog'),)", 'object_name': 'Post'},
             'author': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']"}),
-            'blogs': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['blogs.Blog']", 'symmetrical': 'False'}),
+            'blog': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['blogs.Blog']"}),
             'date': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'description': ('django.db.models.fields.TextField', [], {'max_length': '1024', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),

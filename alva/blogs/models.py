@@ -53,7 +53,7 @@ class Blog(models.Model):
 
 class Post(models.Model):
     author = models.ForeignKey(User)
-    blogs = models.ManyToManyField(Blog)
+    blog = models.ForeignKey(Blog)
     title = models.CharField(max_length=128)
     slug = models.CharField(max_length=128)
     date = models.DateTimeField(auto_now_add=True)
@@ -63,25 +63,26 @@ class Post(models.Model):
 
     folder = "posts"
 
+    class Meta:
+        unique_together = (('slug', 'blog'),)
+
     def path(self, blog):
         return os.path.join(blog.path(), self.folder, "%d.txt" % self.id)
 
     def _save_to_disk(self):
-        # FIXME: self.blogs is empty on creation!
-        for blog in self.blogs.all():
-            with codecs.open(self.path(blog), "wb+", "utf8") as f:
-                template = loader.get_template('blogs/post.tmpl')
-                context = Context(dict(
-                    TITLE=self.title,
-                    DESCRIPTION=self.description,
-                    DATE=self.date.strftime('%Y/%m/%d %H:%M'),
-                    SLUG=self.slug,
-                    TAGS=self.tags,
-                    AUTHOR=" ".join([self.author.first_name, self.author.last_name]),
-                    TEXT=self.text,
-                    ))
-                data = template.render(context)
-                f.write(data)
+        with codecs.open(self.path(self.blog), "wb+", "utf8") as f:
+            template = loader.get_template('blogs/post.tmpl')
+            context = Context(dict(
+                TITLE=self.title,
+                DESCRIPTION=self.description,
+                DATE=self.date.strftime('%Y/%m/%d %H:%M'),
+                SLUG=self.slug,
+                TAGS=self.tags,
+                AUTHOR=" ".join([self.author.first_name, self.author.last_name]),
+                TEXT=self.text,
+                ))
+            data = template.render(context)
+            f.write(data)
 
     def save(self, *args, **kwargs):
         r = super(Post, self).save(*args, **kwargs)
