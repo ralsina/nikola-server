@@ -1,7 +1,9 @@
 # forms.py
-from django import forms
+import datetime
 
-from bootstrap_toolkit.widgets import BootstrapTextInput, BootstrapDateInput
+from django import forms
+from bootstrap_toolkit.widgets import BootstrapTextInput
+from datetimewidget.widgets import DateTimeWidget
 
 from blogs.models import Blog, Post, Story
 
@@ -25,7 +27,16 @@ class BlogForm(forms.ModelForm):
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        exclude = ('author', 'blogs')
+        fields = ('blog', 'title', 'slug', 'tags', 'date', 'description', 'text')
+        exclude = ('author',)
+        widgets = {
+            'title': BootstrapTextInput({'class': 'input-block-level'}),
+            'slug': BootstrapTextInput({'class': 'input-block-level'}),
+            'tags': BootstrapTextInput({'class': 'input-block-level'}),
+            'date': DateTimeWidget(),
+            'description': forms.Textarea({'rows': 3, 'class': 'input-block-level'}),
+            'text': forms.Textarea({'rows': 25, 'class': 'input-block-level'}),
+        }
 
 class StoryForm(forms.ModelForm):
     class Meta:

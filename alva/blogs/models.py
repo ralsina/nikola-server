@@ -56,7 +56,7 @@ class Post(models.Model):
     blog = models.ForeignKey(Blog)
     title = models.CharField(max_length=128)
     slug = models.CharField(max_length=128)
-    date = models.DateTimeField(auto_now_add=True)
+    date = models.DateTimeField()
     tags = models.CharField(max_length=512, blank=True)
     text = models.TextField(max_length=100000, blank=True)
     description = models.TextField(max_length=1024, blank=True)
