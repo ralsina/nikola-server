@@ -8,9 +8,15 @@ from django.core.urlresolvers import reverse_lazy
 from blogs.models import Blog, Post, Story
 from blogs.forms import BlogForm, PostForm, StoryForm
 
+class LoginRequiredMixin(object):
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(LoginRequiredMixin, self).dispatch(*args, **kwargs)
+
+
 # Blog CRUD
 
-class BlogCreate(CreateView):
+class BlogCreate(LoginRequiredMixin, CreateView):
     form_class = BlogForm
     model = Blog
     success_url = reverse_lazy('profile')
@@ -19,19 +25,19 @@ class BlogCreate(CreateView):
         form.instance.owner = self.request.user
         return super(BlogCreate, self).form_valid(form)
 
-class BlogUpdate(UpdateView):
+class BlogUpdate(LoginRequiredMixin, UpdateView):
     form_class = BlogForm
     model = Blog
     success_url = reverse_lazy('profile')
 
-class BlogDelete(DeleteView):
+class BlogDelete(LoginRequiredMixin, DeleteView):
     model = Blog
     success_url = reverse_lazy('profile')
 
 
 # Post CRUD
 
-class PostCreate(CreateView):
+class PostCreate(LoginRequiredMixin, CreateView):
     form_class = PostForm
     model = Post
     success_url = reverse_lazy('profile')
@@ -40,18 +46,18 @@ class PostCreate(CreateView):
         form.instance.author = self.request.user
         return super(PostCreate, self).form_valid(form)
 
-class PostUpdate(UpdateView):
+class PostUpdate(LoginRequiredMixin, UpdateView):
     form_class = PostForm
     model = Post
     success_url = reverse_lazy('profile')
 
-class PostDelete(DeleteView):
+class PostDelete(LoginRequiredMixin, DeleteView):
     model = Post
     success_url = reverse_lazy('profile')
 
 # Story CRUD
 
-class StoryCreate(CreateView):
+class StoryCreate(LoginRequiredMixin, CreateView):
     form_class = StoryForm
     model = Story
     success_url = reverse_lazy('profile')
@@ -60,23 +66,20 @@ class StoryCreate(CreateView):
         form.instance.author = self.request.user
         return super(StoryCreate, self).form_valid(form)
 
-class StoryUpdate(UpdateView):
+class StoryUpdate(LoginRequiredMixin, UpdateView):
     form_class = StoryForm
     model = Story
     success_url = reverse_lazy('profile')
 
-class StoryDelete(DeleteView):
+class StoryDelete(LoginRequiredMixin, DeleteView):
     model = Story
     success_url = reverse_lazy('profile')
 
 
 # Special View for the profile|home
 
-class ProfileView(TemplateView):
+class ProfileView(LoginRequiredMixin, TemplateView):
 
     template_name = "blogs/profile.html"
 
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(ProfileView, self).dispatch(*args, **kwargs)
 
