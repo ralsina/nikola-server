@@ -131,8 +131,19 @@ def blog_sync(blog_id):
     # FIXME: only do this if needed
     save_blog_config(blog_id)
 
+    post_ids = set([])
     for post in blog.post_set.all():
-        print(post)
+        if post.dirty or not os.path.exists(post.path(post.blog)):
+            needs_build = True
+            post.dirty=False
+            post.save()
+            post_ids.add(post.id)
+    post_folder = os.path.join(blog.path(), Post.folder)
+    for fname in os.listdir(post_folder):
+        if fname.split('.')[0] not in post_ids:
+            needs_build = True
+            os.unlink(os.path.join(post_folder, fname))
+
     build_blog(blog_id)
 
 @django_rq.job
