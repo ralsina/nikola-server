@@ -1,4 +1,5 @@
 from django.http import HttpResponse
+from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required
 from django.views.generic import TemplateView
 from django.utils.decorators import method_decorator
@@ -13,6 +14,22 @@ class LoginRequiredMixin(object):
     def dispatch(self, *args, **kwargs):
         return super(LoginRequiredMixin, self).dispatch(*args, **kwargs)
 
+class OwnerOnlyMixin(LoginRequiredMixin):
+
+    def check_owner(self, request):
+        self.object = self.get_object()
+        return request.user==self.object.owner
+
+    def get(self, request, *args, **kwargs):
+        if not self.check_owner(request):
+            raise PermissionDenied()
+        return super(OwnerOnlyMixin, self).get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        if not self.check_owner(request):
+            raise PermissionDenied()
+        return super(OwnerOnlyMixin, self).post(request, *args, **kwargs)
+
 
 # Blog CRUD
 
@@ -25,12 +42,12 @@ class BlogCreate(LoginRequiredMixin, CreateView):
         form.instance.owner = self.request.user
         return super(BlogCreate, self).form_valid(form)
 
-class BlogUpdate(LoginRequiredMixin, UpdateView):
+class BlogUpdate(OwnerOnlyMixin, UpdateView):
     form_class = BlogForm
     model = Blog
     success_url = reverse_lazy('profile')
 
-class BlogDelete(LoginRequiredMixin, DeleteView):
+class BlogDelete(OwnerOnlyMixin, DeleteView):
     model = Blog
     success_url = reverse_lazy('profile')
 
@@ -46,12 +63,18 @@ class PostCreate(LoginRequiredMixin, CreateView):
         form.instance.author = self.request.user
         return super(PostCreate, self).form_valid(form)
 
-class PostUpdate(LoginRequiredMixin, UpdateView):
+class PostUpdate(OwnerOnlyMixin, UpdateView):
+
+    def check_owner(self, request):
+        self.object = self.get_object()
+        return request.user==self.object.blog.owner or\
+            request.user in self.object.blog.members.all()
+
     form_class = PostForm
     model = Post
     success_url = reverse_lazy('profile')
 
-class PostDelete(LoginRequiredMixin, DeleteView):
+class PostDelete(OwnerOnlyMixin, DeleteView):
     model = Post
     success_url = reverse_lazy('profile')
 
@@ -66,12 +89,12 @@ class StoryCreate(LoginRequiredMixin, CreateView):
         form.instance.author = self.request.user
         return super(StoryCreate, self).form_valid(form)
 
-class StoryUpdate(LoginRequiredMixin, UpdateView):
+class StoryUpdate(OwnerOnlyMixin, UpdateView):
     form_class = StoryForm
     model = Story
     success_url = reverse_lazy('profile')
 
-class StoryDelete(LoginRequiredMixin, DeleteView):
+class StoryDelete(OwnerOnlyMixin, DeleteView):
     model = Story
     success_url = reverse_lazy('profile')
 
