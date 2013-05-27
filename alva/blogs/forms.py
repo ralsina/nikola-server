@@ -1,5 +1,6 @@
 # forms.py
 import datetime
+import re
 
 from django import forms
 from bootstrap_toolkit.widgets import BootstrapTextInput
@@ -7,6 +8,7 @@ from datetimewidget.widgets import DateTimeWidget
 
 from blogs.models import Blog, Post, Story
 
+NAME_REGEX = re.compile('^[a-zA-Z0-9]+$')
 
 class NameWidget(BootstrapTextInput):
     def __init__(self, *a, **k):
@@ -23,6 +25,13 @@ class BlogForm(forms.ModelForm):
             'description': forms.Textarea(attrs={'class': 'input-block-level'}),
             'title': BootstrapTextInput({'class': 'input-block-level'}),
         }
+
+    def clean_name(self):
+        name = self.cleaned_data['name']
+        if not NAME_REGEX.match(name):
+            raise forms.ValidationError("Invalid characters")
+        return name
+
 
 class PostForm(forms.ModelForm):
     class Meta:
