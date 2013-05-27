@@ -5,8 +5,8 @@ from django.utils.decorators import method_decorator
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.core.urlresolvers import reverse_lazy
 
-from blogs.models import Blog, Post
-from blogs.forms import BlogForm, PostForm
+from blogs.models import Blog, Post, Story
+from blogs.forms import BlogForm, PostForm, StoryForm
 
 # Blog CRUD
 
@@ -47,6 +47,26 @@ class PostUpdate(UpdateView):
 
 class PostDelete(DeleteView):
     model = Post
+    success_url = reverse_lazy('profile')
+
+# Story CRUD
+
+class StoryCreate(CreateView):
+    form_class = StoryForm
+    model = Story
+    success_url = reverse_lazy('profile')
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super(StoryCreate, self).form_valid(form)
+
+class StoryUpdate(UpdateView):
+    form_class = StoryForm
+    model = Story
+    success_url = reverse_lazy('profile')
+
+class StoryDelete(DeleteView):
+    model = Story
     success_url = reverse_lazy('profile')
 
 

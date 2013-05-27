@@ -21,6 +21,11 @@ urlpatterns = patterns('',
     url(r'^post/(?P<pk>\d+)/$', blog_views.PostUpdate.as_view(), name='post_update'),
     url(r'^post/(?P<pk>\d+)/delete/$', blog_views.PostDelete.as_view(), name='post_delete'),
 
+    # Story CRUD
+    url(r'^story/add/(?P<blog_id>\d+)$', blog_views.StoryCreate.as_view(), name='story_add'),
+    url(r'^story/(?P<pk>\d+)/$', blog_views.StoryUpdate.as_view(), name='story_update'),
+    url(r'^story/(?P<pk>\d+)/delete/$', blog_views.StoryDelete.as_view(), name='story_delete'),
+
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
 )

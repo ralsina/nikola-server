@@ -1,6 +1,6 @@
 # forms.py
 from django import forms
-from blogs.models import Blog, Post
+from blogs.models import Blog, Post, Story
 
 class BlogForm(forms.ModelForm):
     class Meta:
@@ -10,4 +10,9 @@ class BlogForm(forms.ModelForm):
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
+        exclude = ('author',)
+
+class StoryForm(forms.ModelForm):
+    class Meta:
+        model = Story
         exclude = ('author',)

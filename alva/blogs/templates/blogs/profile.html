@@ -9,8 +9,10 @@
     {% for blog in user.owner_of.all %}
         <li>{{blog}} [owner]
             <a href="{% url "post_add" blog_id=blog.id %}">New Post</a> |
+            <a href="{% url "story_add" blog_id=blog.id %}">New Story</a> |
             <a href="{% url "blog_update" pk=blog.id %}">Edit</a> |
-            <a href="{% url "blog_delete" pk=blog.id %}">Delete</a>
+            <a href="{% url "blog_delete" pk=blog.id %}">Delete</a> |
+            <a href="#">View</a>
         </li>
     {% endfor %}
     {% for blog in user.member_of.all %}
@@ -27,7 +29,7 @@
 <hr>
 
 {% if user.post_set.all %}
-    <h2>Your posts:</h2>
+    <h2>Your latest posts:</h2>
     <ul>
     {% for post in user.post_set.all %}
         <li>
@@ -39,5 +41,22 @@
 {% else %}
     You have not posted anything yet.
 {% endif %}
+
+<hr>
+
+{% if user.story_set.all %}
+    <h2>Your latest pages:</h2>
+    <ul>
+    {% for story in user.story_set.all %}
+        <li>
+        <a href="{% url "story_update" pk=story.id%}">{{story}}</a> |
+        <a href="{% url "story_delete" pk=story.id%}">Delete</a>
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    You have not created any pages yet.
+{% endif %}
+
 
 {% endblock %}
