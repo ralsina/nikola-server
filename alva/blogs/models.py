@@ -24,8 +24,8 @@ class Blog(models.Model):
     name = models.CharField(max_length=64, unique=True)
     domain = models.CharField(max_length=64, blank=True)
     title = models.CharField(max_length=128, unique=True)
-    description = models.TextField(max_length=500, blank=True)
     language = models.CharField(max_length=9, choices=LANGUAGE_CHOICES, default='en')
+    description = models.TextField(max_length=500, blank=True)
     dirty = models.BooleanField(default=False)
 
     def path(self):

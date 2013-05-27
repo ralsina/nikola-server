@@ -14,9 +14,12 @@ class NameWidget(BootstrapTextInput):
 class BlogForm(forms.ModelForm):
     class Meta:
         model = Blog
+        fields = ('name', 'title', 'description', 'language')
         exclude = ('owner', 'dirty', 'members', 'domain')
         widgets = {
             'name': NameWidget,
+            'description': forms.Textarea(attrs={'class': 'input-block-level'}),
+            'title': BootstrapTextInput({'class': 'input-block-level'}),
         }
 
 class PostForm(forms.ModelForm):
