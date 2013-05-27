@@ -75,6 +75,12 @@ class PostUpdate(OwnerOnlyMixin, UpdateView):
     success_url = reverse_lazy('profile')
 
 class PostDelete(OwnerOnlyMixin, DeleteView):
+    
+    def check_owner(self, request):
+        self.object = self.get_object()
+        return request.user==self.object.blog.owner or\
+            request.user in self.object.blog.members.all()
+
     model = Post
     success_url = reverse_lazy('profile')
 
