@@ -80,23 +80,16 @@ class PostDelete(OwnerOnlyMixin, DeleteView):
 
 # Story CRUD
 
-class StoryCreate(LoginRequiredMixin, CreateView):
+class StoryCreate(PostCreate):
     form_class = StoryForm
     model = Story
-    success_url = reverse_lazy('profile')
 
-    def form_valid(self, form):
-        form.instance.author = self.request.user
-        return super(StoryCreate, self).form_valid(form)
-
-class StoryUpdate(OwnerOnlyMixin, UpdateView):
+class StoryUpdate(PostUpdate):
     form_class = StoryForm
     model = Story
-    success_url = reverse_lazy('profile')
 
-class StoryDelete(OwnerOnlyMixin, DeleteView):
+class StoryDelete(PostDelete):
     model = Story
-    success_url = reverse_lazy('profile')
 
 
 # Special View for the profile|home
