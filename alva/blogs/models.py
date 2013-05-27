@@ -2,6 +2,7 @@ from __future__ import unicode_literals, print_function
 
 import codecs
 from contextlib import contextmanager
+import json
 import os
 
 from django.db import models
@@ -92,7 +93,7 @@ class Post(models.Model):
         return r
 
     def __unicode__(self):
-        return "{0} ({1})".format(self.title, self.date.strftime('%Y-%m-%d %H:%M'))
+        return "{0} ({1}) in {2}".format(self.title, self.date.strftime('%Y-%m-%d %H:%M'), self.blog)
 
 class Story(Post):
 
@@ -111,9 +112,14 @@ def init_blog(blog_id):
 def save_blog_config(blog_id):
     blog = Blog.objects.get(id=blog_id)
     config_path = os.path.join(blog.path(), "conf.py")
+    conf_data_path = os.path.join(blog.path(), "conf.json")
     with codecs.open(config_path, "wb+", "utf-8") as f:
         template = loader.get_template('blogs/conf.tmpl')
-        context = Context(dict(
+        context = Context()
+        data = template.render(context)
+        f.write(data)
+    with codecs.open(conf_data_path, "wb+", "utf-8") as f:
+        data = json.dump(dict(
             BLOG_AUTHOR=" ".join([blog.owner.first_name, blog.owner.last_name]),
             BLOG_TITLE=blog.title,
             SITE_URL=blog.url(),
@@ -121,9 +127,8 @@ def save_blog_config(blog_id):
             BLOG_DESCRIPTION=blog.description,
             DEFAULT_LANG=blog.language,
             OUTPUT_FOLDER=blog.output_path(),
-            ))
-        data = template.render(context)
-        f.write(data)
+            ), f, skipkeys=True, sort_keys=True)
+
 
 @django_rq.job
 def blog_sync(blog_id):
@@ -138,18 +143,23 @@ def blog_sync(blog_id):
 
     post_ids = set([])
     for post in blog.post_set.all():
+        post_ids.add(str(post.id))
         if post.dirty or not os.path.exists(post.path()):
+            print("Saving: %s" % post)
             needs_build = True
             post.dirty=False
             post.save()
-            post_ids.add(str(post.id))
+        else:
+            print("Not Saving: %s" % post)
+
     post_folder = os.path.join(blog.path(), Post.folder)
     for fname in os.listdir(post_folder):
         if fname.split('.')[0] not in post_ids:
             needs_build = True
+            print("Unlinking: %s" % fname)
             os.unlink(os.path.join(post_folder, fname))
 
-    #build_blog(blog_id)
+    build_blog(blog_id)
 
 @django_rq.job
 def build_blog(blog_id):
