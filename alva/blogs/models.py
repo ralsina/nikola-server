@@ -76,6 +76,7 @@ class Post(models.Model):
 
     class Meta:
         unique_together = (('slug', 'blog'),)
+        ordering = ['-date']
 
     def path(self):
         return os.path.join(self.blog.path(), self.folder, "%d.%s" % (self.id, self.markup))
