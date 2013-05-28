@@ -5,6 +5,8 @@ from django.views.generic import TemplateView
 from django.utils.decorators import method_decorator
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.core.urlresolvers import reverse_lazy
+from django.template import RequestContext
+from django.shortcuts import render_to_response
 
 from blogs.models import Blog, Post, Story
 from blogs.forms import BlogForm, PostForm, StoryForm
@@ -75,7 +77,7 @@ class PostUpdate(OwnerOnlyMixin, UpdateView):
     success_url = reverse_lazy('profile')
 
 class PostDelete(OwnerOnlyMixin, DeleteView):
-    
+
     def check_owner(self, request):
         self.object = self.get_object()
         return request.user==self.object.blog.owner or\
@@ -104,4 +106,26 @@ class ProfileView(LoginRequiredMixin, TemplateView):
 
     template_name = "blogs/profile.html"
 
+import nikola.plugins.compile_rest
+import nikola.plugins.compile_markdown
+import nikola.plugins.compile_textile
+
+def rest_preview(request):
+    markup = nikola.plugins.compile_rest.rst2html(request.POST.get('data', ''))[0]
+    return render_to_response( 'markitup/preview.html',
+                              {'preview': markup},
+                              context_instance=RequestContext(request))
+
+def markdown_preview(request):
+    markup = nikola.plugins.compile_markdown.markdown(request.POST.get('data', ''))
+    print(repr(markup))
+    return render_to_response( 'markitup/preview.html',
+                              {'preview': markup},
+                              context_instance=RequestContext(request))
+
+def textile_preview(request):
+    markup = nikola.plugins.compile_textile.textile(request.POST.get('data', ''))
+    return render_to_response( 'markitup/preview.html',
+                              {'preview': markup},
+                              context_instance=RequestContext(request))
 

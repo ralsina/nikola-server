@@ -105,7 +105,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     # Uncomment the next line for simple clickjacking protection:
-    # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
 ROOT_URLCONF = 'alva.urls'
@@ -179,7 +179,7 @@ LOGGING = {
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.auth.context_processors.auth",
-    "django.core.context_processors.debug",
+    #"django.core.context_processors.debug",
     "django.core.context_processors.i18n",
     "django.core.context_processors.media",
     "django.core.context_processors.static",
@@ -212,6 +212,7 @@ INTERNAL_IPS = ('127.0.0.1',)
 ACCOUNT_EMAIL_VERIFICATION = None
 MARKITUP_SET = 'markitup/sets/restructuredtext'
 
+# This is not used, really
 import nikola.plugins.compile_rest
 def rest_compiler(*a, **kw):
     return nikola.plugins.compile_rest.rst2html(*a, **kw)[0]

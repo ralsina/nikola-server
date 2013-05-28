@@ -29,7 +29,10 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
 
-    url(r'^markitup/', include('markitup.urls')),
+    # Markup renderers
+    url(r'^markitup/preview/rest/', blog_views.rest_preview, name='rest_preview'),
+    url(r'^markitup/preview/markdown/', blog_views.markdown_preview, name='rest_preview'),
+    url(r'^markitup/preview/textile/', blog_views.textile_preview, name='rest_preview'),
 )
 
 urlpatterns += patterns('',
