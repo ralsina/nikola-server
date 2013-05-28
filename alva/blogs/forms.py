@@ -33,6 +33,11 @@ class BlogForm(forms.ModelForm):
             raise forms.ValidationError("Invalid characters")
         return name
 
+    def clean_markup(self):
+        v = self.cleaned_data['markup']
+        if not v in ('rest', 'markdown', 'textile'):
+            raise forms.ValidationError("Invalid markup")
+
 
 class PostForm(forms.ModelForm):
     class Meta:
