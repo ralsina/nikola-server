@@ -1,1 +1,4 @@
-* Use Django-markitup for editors
+* Form validation everywhere
+* Implement page/story CRUD
+* Theming
+* Semi-configurable site layout

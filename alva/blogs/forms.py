@@ -5,6 +5,7 @@ import re
 from django import forms
 from bootstrap_toolkit.widgets import BootstrapTextInput
 from datetimewidget.widgets import DateTimeWidget
+from markitup.widgets import MarkItUpWidget
 
 from blogs.models import Blog, Post, Story
 
@@ -44,7 +45,7 @@ class PostForm(forms.ModelForm):
             'tags': BootstrapTextInput({'class': 'input-block-level'}),
             'date': DateTimeWidget(),
             'description': forms.Textarea({'rows': 3, 'class': 'input-block-level'}),
-            'text': forms.Textarea({'rows': 25, 'class': 'input-block-level'}),
+            'text': MarkItUpWidget({'rows': 25, 'class': 'input-block-level'}),
         }
 
 class StoryForm(forms.ModelForm):
