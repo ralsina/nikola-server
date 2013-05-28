@@ -219,3 +219,7 @@ def rest_compiler(*a, **kw):
 nikola.plugins.compile_rest.rest_compiler = rest_compiler
 
 MARKITUP_FILTER = ('nikola.plugins.compile_rest.rest_compiler', {})
+
+BASE_BLOG_PATH = "/tmp/blogs"
+BASE_OUTPUT_PATH = "/tmp/sites"
+URL_SUFFIX = "donewithniko.la:80"
