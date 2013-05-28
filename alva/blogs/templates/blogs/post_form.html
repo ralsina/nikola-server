@@ -21,7 +21,7 @@
 <script language="javascript">
 var mySettings = textileSettings;
 $(document).ready(function()    {
-    $('#id_text').markItUp(restSettings);
+    $('#id_text').markItUp({{form.markup.value}}Settings);
     $('#id_markup').change(function() {
             $('#id_text').markItUpRemove();
             newSet = $(this).val();
