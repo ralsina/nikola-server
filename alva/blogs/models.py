@@ -49,9 +49,8 @@ class Blog(models.Model):
             return self.name+".donewithniko.la"
 
     def save(self, *args, **kwargs):
-        build = kwargs.pop("build", True)
         r=super(Blog, self).save(*args, **kwargs)
-        if build:
+        if self.dirty:
             blog_sync.delay(self.id)
         return r
 
@@ -145,10 +144,9 @@ def blog_sync(blog_id):
     if not os.path.isdir(blog.path()):
         init_blog(blog_id)
 
-    # FIXME: only do this if needed
-    # Still can't detect config changes so assume dirty
-    needs_build = True
-    save_blog_config(blog_id)
+    if blog.dirty:
+        needs_build = True
+        save_blog_config(blog_id)
 
     post_ids = set([])
     for post in blog.post_set.all():
@@ -179,7 +177,7 @@ def build_blog(blog_id):
         # This is not yet available on any Nikola release
         #os.system("nikola check --clean-files")
     blog.dirty = False
-    blog.save(build=False)
+    blog.save()
 
 # Utility thingies
 

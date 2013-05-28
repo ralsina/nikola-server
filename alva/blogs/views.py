@@ -110,12 +110,14 @@ import nikola.plugins.compile_rest
 import nikola.plugins.compile_markdown
 import nikola.plugins.compile_textile
 
+@login_required
 def rest_preview(request):
     markup = nikola.plugins.compile_rest.rst2html(request.POST.get('data', ''))[0]
     return render_to_response( 'markitup/preview.html',
                               {'preview': markup},
                               context_instance=RequestContext(request))
 
+@login_required
 def markdown_preview(request):
     markup = nikola.plugins.compile_markdown.markdown(request.POST.get('data', ''))
     print(repr(markup))
@@ -123,6 +125,7 @@ def markdown_preview(request):
                               {'preview': markup},
                               context_instance=RequestContext(request))
 
+@login_required
 def textile_preview(request):
     markup = nikola.plugins.compile_textile.textile(request.POST.get('data', ''))
     return render_to_response( 'markitup/preview.html',

@@ -19,12 +19,13 @@ class NameWidget(BootstrapTextInput):
 class BlogForm(forms.ModelForm):
     class Meta:
         model = Blog
-        fields = ('name', 'title', 'description', 'language')
-        exclude = ('owner', 'dirty', 'members', 'domain')
+        fields = ('name', 'title', 'description', 'language', 'dirty')
+        exclude = ('owner', 'members', 'domain')
         widgets = {
             'name': NameWidget,
             'description': forms.Textarea(attrs={'class': 'input-block-level'}),
             'title': BootstrapTextInput({'class': 'input-block-level'}),
+            'dirty': forms.HiddenInput(),
         }
 
     def clean_name(self):
@@ -37,6 +38,11 @@ class BlogForm(forms.ModelForm):
         v = self.cleaned_data['markup']
         if not v in ('rest', 'markdown', 'textile'):
             raise forms.ValidationError("Invalid markup")
+
+    def clean_dirty(self):
+        # Basically, always dirty, to force blog sync
+        self.cleaned_data['dirty'] = True
+        return True
 
 
 class PostForm(forms.ModelForm):
