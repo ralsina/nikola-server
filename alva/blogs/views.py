@@ -120,7 +120,6 @@ def rest_preview(request):
 @login_required
 def markdown_preview(request):
     markup = nikola.plugins.compile_markdown.markdown(request.POST.get('data', ''))
-    print(repr(markup))
     return render_to_response( 'markitup/preview.html',
                               {'preview': markup},
                               context_instance=RequestContext(request))

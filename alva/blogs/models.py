@@ -6,6 +6,7 @@ import json
 import os
 
 from django.db import models
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.template import Context, loader
 
@@ -21,9 +22,11 @@ MARKUP_CHOICES = (
     ('markdown', 'MarkDown'),
     ('textile', 'Textile'),
 )
-BASE_BLOG_PATH = "/home/ralsina/server/blogs"
-BASE_OUTPUT_PATH = "/home/ralsina/server/sites"
-URL_SUFFIX = ".donewithniko.la:80"
+
+
+BASE_BLOG_PATH = getattr(settings, "BASE_BLOG_PATH", "/tmp/blogs")
+BASE_OUTPUT_PATH = getattr(settings, "BASE_OUTPUT_PATH", "/tmp/sites")
+URL_SUFFIX = getattr(settings, "URL_SUFFIX", "donewithniko.la:80")
 
 
 class Blog(models.Model):
