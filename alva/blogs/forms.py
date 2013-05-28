@@ -45,7 +45,7 @@ class PostForm(forms.ModelForm):
             'tags': BootstrapTextInput({'class': 'input-block-level'}),
             'date': DateTimeWidget(),
             'description': forms.Textarea({'rows': 3, 'class': 'input-block-level'}),
-            'text': MarkItUpWidget(),
+            'text': forms.Textarea(),
         }
 
 class StoryForm(forms.ModelForm):

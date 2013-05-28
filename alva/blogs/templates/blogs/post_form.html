@@ -2,9 +2,9 @@
 {% load bootstrap_toolkit %}
 {% load markitup_tags %}
 
-
 {% block extra_head %}
 {{ form.media }}
+{% markitup_media "no-jquery" %}
 <script type="text/javascript" src="/static/markitup/sets/textile/set.js"></script>
 <script type="text/javascript" src="/static/markitup/sets/markdown/set.js"></script>
 <link href="/static/markitup/sets/textile/style.css" type="text/css" media="screen" rel="stylesheet" />
@@ -12,9 +12,16 @@
 {% endblock %}
 
 {% block content %}
+<form class="form-horizontal" action="#" method="post">{% csrf_token %}
+{% bootstrap_form form layout="horizontal" %}
+ <div class="form-actions">
+   <button type="submit" class="btn btn-primary pull-right">Submit</button>
+ </div>
+ </form>
 <script language="javascript">
 var mySettings = textileSettings;
 $(document).ready(function()    {
+    $('#id_text').markItUp(restSettings);
     $('#id_markup').change(function() {
             $('#id_text').markItUpRemove();
             newSet = $(this).val();
@@ -34,10 +41,4 @@ $(document).ready(function()    {
     );
 });
 </script>
-<form class="form-horizontal" action="#" method="post">{% csrf_token %}
-{% bootstrap_form form layout="horizontal" %}
- <div class="form-actions">
-   <button type="submit" class="btn btn-primary pull-right">Submit</button>
- </div>
- </form>
 {% endblock %}
