@@ -48,6 +48,10 @@ class PostForm(forms.ModelForm):
             'text': forms.Textarea(),
         }
 
+    def clean_dirty(self):
+        # Basically, always dirty, to force blog sync
+        return True
+
 class StoryForm(forms.ModelForm):
     class Meta:
         model = Story
