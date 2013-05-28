@@ -37,7 +37,7 @@ class Blog(models.Model):
     dirty = models.BooleanField(default=False)
 
     def path(self):
-        return os.path.join(BASE_BLOG_PATH, self.name + self.markup)
+        return os.path.join(BASE_BLOG_PATH, self.name)
 
     def output_path(self):
         return os.path.join(BASE_OUTPUT_PATH, self.name + URL_SUFFIX)
@@ -76,11 +76,9 @@ class Post(models.Model):
         unique_together = (('slug', 'blog'),)
 
     def path(self):
-        return os.path.join(self.blog.path(), self.folder, "%d.txt" % self.id)
+        return os.path.join(self.blog.path(), self.folder, "%d.%s" % (self.id, self.markup))
 
-
-    def save(self, *args, **kwargs):
-        r = super(Post, self).save(*args, **kwargs)
+    def save_to_disk(self):
         template = loader.get_template('blogs/post.tmpl')
         context = Context(dict(
             TITLE=self.title,
@@ -94,6 +92,9 @@ class Post(models.Model):
         data = template.render(context)
         with codecs.open(self.path(), "wb+", "utf8") as f:
             f.write(data)
+
+    def save(self, *args, **kwargs):
+        r = super(Post, self).save(*args, **kwargs)
         if self.dirty:
             blog_sync.delay(self.blog.id)
         return r
@@ -156,7 +157,7 @@ def blog_sync(blog_id):
             print("Saving: %s" % post)
             needs_build = True
             post.dirty=False
-            post.save()
+            post.save_to_disk()
         else:
             print("Not Saving: %s" % post)
 

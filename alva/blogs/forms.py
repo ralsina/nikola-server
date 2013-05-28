@@ -37,7 +37,7 @@ class BlogForm(forms.ModelForm):
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ('blog', 'title', 'slug', 'tags', 'date', 'description', 'markup', 'text')
+        fields = ('blog', 'title', 'slug', 'tags', 'date', 'description', 'markup', 'text', 'dirty')
         exclude = ('author',)
         widgets = {
             'title': BootstrapTextInput({'class': 'input-block-level'}),
@@ -46,10 +46,12 @@ class PostForm(forms.ModelForm):
             'date': DateTimeWidget(),
             'description': forms.Textarea({'rows': 3, 'class': 'input-block-level'}),
             'text': forms.Textarea(),
+            'dirty': forms.HiddenInput(),
         }
 
     def clean_dirty(self):
         # Basically, always dirty, to force blog sync
+        self.cleaned_data['dirty'] = True
         return True
 
 class StoryForm(forms.ModelForm):
