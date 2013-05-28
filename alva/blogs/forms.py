@@ -37,7 +37,7 @@ class BlogForm(forms.ModelForm):
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ('blog', 'title', 'slug', 'tags', 'date', 'description', 'text')
+        fields = ('blog', 'title', 'slug', 'tags', 'date', 'description', 'markup', 'text')
         exclude = ('author',)
         widgets = {
             'title': BootstrapTextInput({'class': 'input-block-level'}),
@@ -45,7 +45,7 @@ class PostForm(forms.ModelForm):
             'tags': BootstrapTextInput({'class': 'input-block-level'}),
             'date': DateTimeWidget(),
             'description': forms.Textarea({'rows': 3, 'class': 'input-block-level'}),
-            'text': MarkItUpWidget({'rows': 25, 'class': 'input-block-level'}),
+            'text': MarkItUpWidget(),
         }
 
 class StoryForm(forms.ModelForm):

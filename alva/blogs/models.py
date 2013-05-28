@@ -16,6 +16,11 @@ LANGUAGE_CHOICES = (
     ('es', 'Spanish'),
 )
 
+MARKUP_CHOICES = (
+    ('restructuredtext', 'RestructuredText'),
+    ('markdown', 'MarkDown'),
+    ('textile', 'Textile'),
+)
 BASE_BLOG_PATH = "/home/ralsina/server/blogs"
 BASE_OUTPUT_PATH = "/home/ralsina/server/sites"
 URL_SUFFIX = ".donewithniko.la:80"
@@ -63,6 +68,7 @@ class Post(models.Model):
     text = models.TextField(max_length=100000, blank=True)
     description = models.TextField(max_length=1024, blank=True)
     dirty = models.BooleanField(default=True)
+    markup = models.CharField(max_length=30, choices=MARKUP_CHOICES, default='restructuredtext')
 
     folder = "posts"
 

@@ -5,10 +5,35 @@
 
 {% block extra_head %}
 {{ form.media }}
-{% markitup_media "no-jquery" %}
+<script type="text/javascript" src="/static/markitup/sets/textile/set.js"></script>
+<script type="text/javascript" src="/static/markitup/sets/markdown/set.js"></script>
+<link href="/static/markitup/sets/textile/style.css" type="text/css" media="screen" rel="stylesheet" />
+<link href="/static/markitup/sets/markdown/style.css" type="text/css" media="screen" rel="stylesheet" />
 {% endblock %}
 
 {% block content %}
+<script language="javascript">
+var mySettings = textileSettings;
+$(document).ready(function()    {
+    $('#id_markup').change(function() {
+            $('#id_text').markItUpRemove();
+            newSet = $(this).val();
+            switch(newSet) {
+                case 'restructuredtext':
+                    $('#id_text').markItUp(restSettings);
+                    break;
+                case 'textile':
+                    $('#id_text').markItUp(textileSettings);
+                    break;
+                case 'markdown':
+                    $('#id_text').markItUp(markdownSettings);
+                    break;
+            }
+            return false;
+        }
+    );
+});
+</script>
 <form class="form-horizontal" action="#" method="post">{% csrf_token %}
 {% bootstrap_form form layout="horizontal" %}
  <div class="form-actions">
