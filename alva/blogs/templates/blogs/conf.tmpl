@@ -28,13 +28,17 @@ SIDEBAR_LINKS = {
 }
 
 post_pages = (
-    ("posts/*.txt", "posts", "post.tmpl", True),
-    ("stories/*.txt", "stories", "story.tmpl", False),
+    ("posts/*.rest", "posts", "post.tmpl", True),
+    ("posts/*.markdown", "posts", "post.tmpl", True),
+    ("posts/*.textile", "posts", "post.tmpl", True),
+    ("stories/*.rest", "stories", "story.tmpl", False),
+    ("stories/*.markdown", "stories", "story.tmpl", False),
+    ("stories/*.textile", "stories", "story.tmpl", False),
 )
 
 post_compilers = post_compilers = {
-    "rest": ('.txt', '.rst'),
-    "markdown": ('.md', '.mdown', '.markdown'),
+    "rest": ('.rest'),
+    "markdown": ('.markdown'),
     "textile": ('.textile',),
     "txt2tags": ('.t2t',),
     "bbcode": ('.bb',),
