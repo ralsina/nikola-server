@@ -17,7 +17,7 @@ LANGUAGE_CHOICES = (
 )
 
 MARKUP_CHOICES = (
-    ('restructuredtext', 'RestructuredText'),
+    ('rest', 'RestructuredText'),
     ('markdown', 'MarkDown'),
     ('textile', 'Textile'),
 )
@@ -37,7 +37,7 @@ class Blog(models.Model):
     dirty = models.BooleanField(default=False)
 
     def path(self):
-        return os.path.join(BASE_BLOG_PATH, self.name)
+        return os.path.join(BASE_BLOG_PATH, self.name + self.markup)
 
     def output_path(self):
         return os.path.join(BASE_OUTPUT_PATH, self.name + URL_SUFFIX)
@@ -78,7 +78,9 @@ class Post(models.Model):
     def path(self):
         return os.path.join(self.blog.path(), self.folder, "%d.txt" % self.id)
 
-    def _save_to_disk(self):
+
+    def save(self, *args, **kwargs):
+        r = super(Post, self).save(*args, **kwargs)
         template = loader.get_template('blogs/post.tmpl')
         context = Context(dict(
             TITLE=self.title,
@@ -92,10 +94,8 @@ class Post(models.Model):
         data = template.render(context)
         with codecs.open(self.path(), "wb+", "utf8") as f:
             f.write(data)
-
-    def save(self, *args, **kwargs):
-        r = super(Post, self).save(*args, **kwargs)
-        self._save_to_disk()
+        if self.dirty:
+            blog_sync.delay(self.blog.id)
         return r
 
     def __unicode__(self):
@@ -145,6 +145,8 @@ def blog_sync(blog_id):
         init_blog(blog_id)
 
     # FIXME: only do this if needed
+    # Still can't detect config changes so assume dirty
+    needs_build = True
     save_blog_config(blog_id)
 
     post_ids = set([])
@@ -165,7 +167,8 @@ def blog_sync(blog_id):
             print("Unlinking: %s" % fname)
             os.unlink(os.path.join(post_folder, fname))
 
-    build_blog(blog_id)
+    if needs_build:
+        build_blog(blog_id)
 
 @django_rq.job
 def build_blog(blog_id):
