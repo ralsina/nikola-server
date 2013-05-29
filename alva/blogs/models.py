@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import unicode_literals, print_function
 
 import codecs
@@ -14,7 +15,21 @@ import django_rq
 
 LANGUAGE_CHOICES = (
     ('en', 'English'),
-    ('es', 'Spanish'),
+    ('es', 'Español'),
+    ('ca', 'Català'),
+    ('de', 'Deutsch'),
+    ('el', 'Ελληνικά'),
+    ('fa', 'فارسی'),
+    ('fr', 'Français'),
+    ('gr', 'Ελληνικά'),
+    ('hr', 'Croatian'),
+    ('it', 'Italiano'),
+    ('ja', '日本語'),
+    ('pl', 'polski'),
+    ('ru', 'Русский'),
+    ('pt_BR', 'Português'),
+    ('tr_TR', 'Türkçe'),
+    ('zh_CN', '简体中文'),
 )
 
 MARKUP_CHOICES = (
@@ -70,7 +85,7 @@ class Post(models.Model):
     text = models.TextField(max_length=100000, blank=True)
     description = models.TextField(max_length=1024, blank=True)
     dirty = models.BooleanField(default=True)
-    markup = models.CharField(max_length=30, choices=MARKUP_CHOICES, default='restructuredtext')
+    markup = models.CharField(max_length=30, choices=MARKUP_CHOICES, default='rest')
 
     folder = "posts"
 
