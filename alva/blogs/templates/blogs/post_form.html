@@ -39,6 +39,12 @@ $(document).ready(function()    {
             return false;
         }
     );
+    $('#id_title').change(function() {
+        // Make the slug autogenerate from the title
+        if ($('#id_slug').val() == '') {
+            $('#id_slug').val($('#id_title').val().toLowerCase().replace(/[^\w ]+/g,'').replace(/ +/g,'-'));
+        }
+    });
 });
 </script>
 {% endblock %}
