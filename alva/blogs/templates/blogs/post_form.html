@@ -19,7 +19,7 @@
  </div>
  </form>
 <script language="javascript">
-var mySettings = textileSettings;
+var mySettings = {{form.markup.value}}Settings;
 $(document).ready(function()    {
     $('#id_text').markItUp({{form.markup.value}}Settings);
     $('#id_markup').change(function() {

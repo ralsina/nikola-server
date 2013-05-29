@@ -210,7 +210,7 @@ RQ_SHOW_ADMIN_LINK = True
 
 INTERNAL_IPS = ('127.0.0.1',)
 ACCOUNT_EMAIL_VERIFICATION = None
-MARKITUP_SET = 'markitup/sets/restructuredtext'
+MARKITUP_SET = 'markitup/sets/rest'
 
 # This is not used, really
 import nikola.plugins.compile_rest
@@ -223,3 +223,9 @@ MARKITUP_FILTER = ('nikola.plugins.compile_rest.rest_compiler', {})
 BASE_BLOG_PATH = "/tmp/blogs"
 BASE_OUTPUT_PATH = "/tmp/sites"
 URL_SUFFIX = "donewithniko.la:80"
+
+def testing_urls(sitename):
+    """How does one find the generated sites?"""
+    return "http://localhost:9000/{0}.donewithniko.la%3A80/"
+
+TEST_URL_GENERATOR = testing_urls
