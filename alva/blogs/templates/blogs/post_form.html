@@ -21,6 +21,10 @@
 <script language="javascript">
 var mySettings = {{form.markup.value}}Settings;
 $(document).ready(function()    {
+    now = new Date()
+    if ($('#id_date_0').val() == '') {
+        $('#id_date_0').val(now.getDate()+'/'+(now.getMonth()+1)+'/'+now.getFullYear()+' '+now.getHours()+':'+now.getMinutes());
+    }
     $('#id_text').markItUp({{form.markup.value}}Settings);
     $('#id_markup').change(function() {
             $('#id_text').markItUpRemove();
