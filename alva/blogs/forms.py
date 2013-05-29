@@ -8,8 +8,10 @@ from datetimewidget.widgets import DateTimeWidget
 from markitup.widgets import MarkItUpWidget
 
 from blogs.models import Blog, Post, Story
+from nikola.utils import slugify
 
 NAME_REGEX = re.compile('^[a-zA-Z0-9]+$')
+TAG_REGEX = re.compile('^[a-zA-Z0-9 ,]*$')
 
 class NameWidget(BootstrapTextInput):
     def __init__(self, *a, **k):
@@ -59,6 +61,18 @@ class PostForm(forms.ModelForm):
             'text': forms.Textarea(),
             'dirty': forms.HiddenInput(),
         }
+
+    def clean_slug(self):
+        slug = self.cleaned_data['slug']
+        if slug != slugify(slug):
+            raise forms.ValidationError("Just lowercase letters, numbers and '-' please.")
+        return slug
+
+    def clean_tags(self):
+        tags = self.cleaned_data['tags']
+        if not TAG_REGEX.match(tags):
+            raise forms.ValidationError("Just lowercase letters and numbers, separated by commas.")
+        return tags
 
     def clean_dirty(self):
         # Basically, always dirty, to force blog sync
