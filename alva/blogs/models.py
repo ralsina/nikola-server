@@ -64,7 +64,7 @@ class Post(models.Model):
     author = models.ForeignKey(User)
     blog = models.ForeignKey(Blog)
     title = models.CharField(max_length=128)
-    slug = models.CharField(max_length=128)
+    slug = models.SlugField(max_length=128)
     date = models.DateTimeField()
     tags = models.CharField(max_length=512, blank=True)
     text = models.TextField(max_length=100000, blank=True)
