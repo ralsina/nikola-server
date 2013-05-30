@@ -33,7 +33,16 @@
             {% endfor %}
             {% for blog in user.member_of.all %}
                 {% if blog not in user.owner_of.all %}
-                    <li>{{blog}} [member]<a href="#">New Post</a> </li>
+                <li><span class="lead">{{blog}}</span> <span class="label label-info">member</span>
+                <li>
+                    <div class="btn-group">
+                        <a class="btn btn-small" href="{% url "post_add" blog_id=blog.id %}"><i class="icon-plus"></i> New Post</a>
+                        <a class="btn btn-small" href="{% url "story_add" blog_id=blog.id %}"><i class="icon-plus"></i> New Page</a>
+                        <a class="btn btn-small" href="{% url "blog_update" pk=blog.id %}"><i class="icon-wrench"></i> Edit</a>
+                        <a class="btn btn-small" href="{% url "blog_delete" pk=blog.id %}"><i class="icon-trash"></i> Delete</a>
+                        <a class="btn btn-small" href="{{blog.url}}"><i class="icon-eye-open"></i> View</a>
+                    </div>
+                </li>
                 {% endif %}
             {% endfor %}
             </ul>
