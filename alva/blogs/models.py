@@ -46,7 +46,7 @@ URL_SUFFIX = getattr(settings, "URL_SUFFIX", "donewithniko.la:80")
 
 class Blog(models.Model):
     owner = models.ForeignKey(User, related_name="owner_of")
-    members = models.ManyToManyField(User, related_name="member_of")
+    members = models.ManyToManyField(User, related_name="member_of", blank=True, null=True)
     name = models.CharField(max_length=64, unique=True)
     domain = models.CharField(max_length=64, blank=True)
     title = models.CharField(max_length=128, unique=True)
