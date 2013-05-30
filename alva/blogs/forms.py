@@ -32,7 +32,7 @@ class BlogForm(forms.ModelForm):
 
     def clean_name(self):
         name = self.cleaned_data['name']
-        if not NAME_REGEX.match(name):
+        if not NAME_REGEX.match(name) or name in ['www', 'static', 'admin']:
             raise forms.ValidationError("Invalid characters")
         return name
 
