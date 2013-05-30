@@ -17,6 +17,7 @@ urlpatterns = patterns('',
     url(r'^blog/(?P<pk>\d+)/delete/$', blog_views.BlogDelete.as_view(), name='blog_delete'),
 
     # Post CRUD
+    url(r'^post/add/$', blog_views.PostCreate.as_view(), name='post_add'),
     url(r'^post/add/(?P<blog_id>\d+)$', blog_views.PostCreate.as_view(), name='post_add'),
     url(r'^post/(?P<pk>\d+)/$', blog_views.PostUpdate.as_view(), name='post_update'),
     url(r'^post/(?P<pk>\d+)/delete/$', blog_views.PostDelete.as_view(), name='post_delete'),

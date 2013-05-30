@@ -63,7 +63,13 @@ class PostCreate(LoginRequiredMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super(PostCreate, self).get_context_data(**kwargs)
-        context['blog'] = self.kwargs['blog_id']
+        context['blog'] = self.kwargs.get('blog_id', None)
+        if not context['blog']:
+            if self.request.user.owner_of.all():
+                context['blog'] = self.request.user.owner_of.all()[0].id
+        if not context['blog']:
+            if self.request.user.member_of.all():
+                context['blog'] = self.request.user.member_of.all()[0].id
         context['form'].fields['blog'].queryset = Blog.objects.filter(owner=self.request.user)
         return context
 
