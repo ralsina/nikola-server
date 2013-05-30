@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.http import HttpResponse
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required
@@ -70,7 +71,7 @@ class PostCreate(LoginRequiredMixin, CreateView):
         if not context['blog']:
             if self.request.user.member_of.all():
                 context['blog'] = self.request.user.member_of.all()[0].id
-        context['form'].fields['blog'].queryset = Blog.objects.filter(owner=self.request.user)
+        context['form'].fields['blog'].queryset = Blog.objects.filter(Q(owner=self.request.user)|Q(pk__in=self.request.user.member_of.all()))
         return context
 
     def form_valid(self, form):
