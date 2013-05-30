@@ -62,9 +62,9 @@ class Blog(models.Model):
 
     def url(self):
         if self.domain:
-            return self.domain
+            return "http://"+self.domain
         else:
-            return self.name+".donewithniko.la"
+            return "http://"+self.name+".donewithniko.la"
 
     def save(self, *args, **kwargs):
         r=super(Blog, self).save(*args, **kwargs)
