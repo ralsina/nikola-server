@@ -25,6 +25,7 @@ $(document).ready(function()    {
     if ($('#id_date_0').val() == '') {
         $('#id_date_0').val(now.getDate()+'/'+(now.getMonth()+1)+'/'+now.getFullYear()+' '+now.getHours()+':'+now.getMinutes());
     }
+    $('#id_blog').val({{blog}});
     $('#id_text').markItUp({{form.markup.value}}Settings);
     $('#id_markup').change(function() {
             $('#id_text').markItUpRemove();

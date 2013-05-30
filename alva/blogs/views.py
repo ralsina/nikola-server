@@ -61,8 +61,17 @@ class PostCreate(LoginRequiredMixin, CreateView):
     model = Post
     success_url = reverse_lazy('profile')
 
+    def get_context_data(self, **kwargs):
+        context = super(PostCreate, self).get_context_data(**kwargs)
+        context['blog'] = self.kwargs['blog_id']
+        context['form'].fields['blog'].queryset = Blog.objects.filter(owner=self.request.user)
+        return context
+
     def form_valid(self, form):
         form.instance.author = self.request.user
+        blog = form.instance.blog
+        if self.request.user != blog.owner and author not in blog.members.objects.all():
+            raise forms.ValidationError("You can't post in that blog.")
         return super(PostCreate, self).form_valid(form)
 
 class PostUpdate(OwnerOnlyMixin, UpdateView):
