@@ -142,7 +142,6 @@ INSTALLED_APPS = (
     'datetimewidget',
     'debug_toolbar',
     'south',
-    'markitup',
 
     'blogs',
 
@@ -210,16 +209,6 @@ RQ_SHOW_ADMIN_LINK = True
 
 INTERNAL_IPS = ('127.0.0.1',)
 ACCOUNT_EMAIL_VERIFICATION = None
-MARKITUP_SET = 'markitup/sets/rest'
-SOCIALACCOUNT_ENABLED = True
-
-# This is not used, really
-import nikola.plugins.compile_rest
-def rest_compiler(*a, **kw):
-    return nikola.plugins.compile_rest.rst2html(*a, **kw)[0]
-nikola.plugins.compile_rest.rest_compiler = rest_compiler
-
-MARKITUP_FILTER = ('nikola.plugins.compile_rest.rest_compiler', {})
 
 BASE_BLOG_PATH = "/tmp/blogs"
 BASE_OUTPUT_PATH = "/tmp/sites"
