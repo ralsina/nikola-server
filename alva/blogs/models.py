@@ -171,18 +171,14 @@ def blog_sync(blog_id):
     for post in blog.post_set.all():
         post_ids.add(str(post.id))
         if post.dirty or not os.path.exists(post.path()):
-            print("Saving: %s" % post)
             needs_build = True
             post.dirty=False
             post.save_to_disk()
-        else:
-            print("Not Saving: %s" % post)
 
     post_folder = os.path.join(blog.path(), Post.folder)
     for fname in os.listdir(post_folder):
         if fname.split('.')[0] not in post_ids:
             needs_build = True
-            print("Unlinking: %s" % fname)
             os.unlink(os.path.join(post_folder, fname))
 
     if needs_build:
