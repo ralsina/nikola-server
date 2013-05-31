@@ -6,3 +6,4 @@
 * Add search form
 * Add UI for blog membership
 * Implement backups
+* Show message when a post/blog is edited reminding the user that it may take a bit before it's visible
