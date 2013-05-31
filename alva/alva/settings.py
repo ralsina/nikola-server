@@ -211,6 +211,7 @@ RQ_SHOW_ADMIN_LINK = True
 INTERNAL_IPS = ('127.0.0.1',)
 ACCOUNT_EMAIL_VERIFICATION = None
 MARKITUP_SET = 'markitup/sets/rest'
+SOCIALACCOUNT_ENABLED = True
 
 # This is not used, really
 import nikola.plugins.compile_rest
