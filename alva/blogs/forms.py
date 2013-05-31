@@ -5,7 +5,6 @@ import re
 from django import forms
 from bootstrap_toolkit.widgets import BootstrapTextInput
 from datetimewidget.widgets import DateTimeWidget
-from markitup.widgets import MarkItUpWidget
 
 from blogs.models import Blog, Post, Story
 from nikola.utils import slugify
