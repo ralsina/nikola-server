@@ -1,13 +1,15 @@
+from django.core.exceptions import PermissionDenied
+from django.core.urlresolvers import reverse_lazy
+from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.http import HttpResponse
-from django.core.exceptions import PermissionDenied
-from django.contrib.auth.decorators import login_required
-from django.views.generic import TemplateView
-from django.utils.decorators import method_decorator
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.core.urlresolvers import reverse_lazy
-from django.template import RequestContext
 from django.shortcuts import render_to_response
+from django.template import RequestContext
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
+from django.views.generic import TemplateView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
 from blogs.models import Blog, Post, Story
 from blogs.forms import BlogForm, PostForm, StoryForm
@@ -127,23 +129,29 @@ import nikola.plugins.compile_markdown
 import nikola.plugins.compile_textile
 
 @login_required
+@require_http_methods(["POST"])
+@csrf_exempt
 def rest_preview(request):
     markup = nikola.plugins.compile_rest.rst2html(request.POST.get('data', ''))[0]
-    return render_to_response( 'markitup/preview.html',
+    return render_to_response( 'blogs/preview.html',
                               {'preview': markup},
                               context_instance=RequestContext(request))
 
 @login_required
+@require_http_methods(["POST"])
+@csrf_exempt
 def markdown_preview(request):
     markup = nikola.plugins.compile_markdown.markdown(request.POST.get('data', ''))
-    return render_to_response( 'markitup/preview.html',
+    return render_to_response( 'blogs/preview.html',
                               {'preview': markup},
                               context_instance=RequestContext(request))
 
 @login_required
+@require_http_methods(["POST"])
+@csrf_exempt
 def textile_preview(request):
     markup = nikola.plugins.compile_textile.textile(request.POST.get('data', ''))
-    return render_to_response( 'markitup/preview.html',
+    return render_to_response( 'blogs/preview.html',
                               {'preview': markup},
                               context_instance=RequestContext(request))
 

@@ -31,9 +31,9 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
 
     # Markup renderers
-    url(r'^markitup/preview/rest/', blog_views.rest_preview, name='rest_preview'),
-    url(r'^markitup/preview/markdown/', blog_views.markdown_preview, name='markdown_preview'),
-    url(r'^markitup/preview/textile/', blog_views.textile_preview, name='textile_preview'),
+    url(r'^markitup/preview/rest/$', blog_views.rest_preview, name='rest_preview'),
+    url(r'^markitup/preview/markdown/$', blog_views.markdown_preview, name='markdown_preview'),
+    url(r'^markitup/preview/textile/$', blog_views.textile_preview, name='textile_preview'),
 )
 
 urlpatterns += patterns('',
