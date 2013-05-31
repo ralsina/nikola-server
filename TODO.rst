@@ -5,3 +5,4 @@
 * translate nav links , make nav-links configurable
 * Add search form
 * Add UI for blog membership
+* Implement backups
