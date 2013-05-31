@@ -213,3 +213,6 @@ ACCOUNT_EMAIL_VERIFICATION = None
 BASE_BLOG_PATH = "/tmp/blogs"
 BASE_OUTPUT_PATH = "/tmp/sites"
 URL_SUFFIX = "donewithniko.la:80"
+
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'

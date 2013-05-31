@@ -162,6 +162,7 @@ def blog_sync(blog_id):
     blog = Blog.objects.get(id=blog_id)
     if not os.path.isdir(blog.path()):
         init_blog(blog_id)
+        needs_build = True
 
     if blog.dirty:
         needs_build = True
