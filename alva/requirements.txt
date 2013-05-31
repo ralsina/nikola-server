@@ -16,7 +16,6 @@ django-allauth==0.10.1
 django-bootstrap-toolkit==2.12.0
 django-datetime-widget==0.5
 django-debug-toolbar==0.9.4
-django-markitup==1.0.0
 django-rq==0.4.6
 docutils==0.10
 doit==0.21.1
