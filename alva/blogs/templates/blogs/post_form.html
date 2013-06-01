@@ -4,14 +4,14 @@
 
 {% block extra_head %}
 {{ form.media }}
-<script type="text/javascript" src="{% static markitup/jquery.markitup.js %}"></script>
-<script type="text/javascript" src="{% static /markitup/sets/rest/set.js %}"></script>
-<script type="text/javascript" src="{% static markitup/sets/textile/set.js %}"></script>
-<script type="text/javascript" src="{% static markitup/sets/markdown/set.js %}"></script>
-<link rel="stylesheet" type="text/css" href="{% static markitup/skins/markitup/style.css %}">
-<link href="{% static markitup/sets/rest/style.css %}" type="text/css" media="screen" rel="stylesheet" />
-<link href="{% static markitup/sets/textile/style.css %}" type="text/css" media="screen" rel="stylesheet" />
-<link href="{% static markitup/sets/markdown/style.css %}" type="text/css" media="screen" rel="stylesheet" />
+<script type="text/javascript" src="{% static "markitup/jquery.markitup.js" %}"></script>
+<script type="text/javascript" src="{% static "markitup/sets/rest/set.js" %}"></script>
+<script type="text/javascript" src="{% static "markitup/sets/textile/set.js" %}"></script>
+<script type="text/javascript" src="{% static "markitup/sets/markdown/set.js" %}"></script>
+<link rel="stylesheet" type="text/css" href="{% static "markitup/skins/markitup/style.css" %}">
+<link href="{% static "markitup/sets/rest/style.css" %}" type="text/css" media="screen" rel="stylesheet" />
+<link href="{% static "markitup/sets/textile/style.css" %}" type="text/css" media="screen" rel="stylesheet" />
+<link href="{% static "markitup/sets/markdown/style.css" %}" type="text/css" media="screen" rel="stylesheet" />
 {% endblock %}
 
 {% block content %}
