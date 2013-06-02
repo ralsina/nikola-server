@@ -109,16 +109,16 @@ class PostDelete(OwnerOnlyMixin, DeleteView):
 class StoryCreate(PostCreate):
     form_class = StoryForm
     model = Story
-    template_name = "blogs/post_form"  # Until something different is done
+    template_name = "blogs/post_form.html"  # Until something different is done
 
 class StoryUpdate(PostUpdate):
     form_class = StoryForm
     model = Story
-    template_name = "blogs/post_form"  # Until something different is done
+    template_name = "blogs/post_form.html"  # Until something different is done
 
 class StoryDelete(PostDelete):
     model = Story
-    template_name = "blogs/post_form"  # Until something different is done
+    template_name = "blogs/post_form.html"  # Until something different is done
 
 
 # Special View for the profile|home
