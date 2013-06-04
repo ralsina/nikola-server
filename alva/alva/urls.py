@@ -30,6 +30,9 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
 
+    # Fileshack
+    url(r'^filestores/', include('fileshack.urls', 'fileshack')),
+
     # Markup renderers
     url(r'^markitup/preview/rest/$', blog_views.rest_preview, name='rest_preview'),
     url(r'^markitup/preview/markdown/$', blog_views.markdown_preview, name='markdown_preview'),

@@ -142,6 +142,7 @@ INSTALLED_APPS = (
     'datetimewidget',
     'debug_toolbar',
     'south',
+    'fileshack',
 
     'blogs',
 
