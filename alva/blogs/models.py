@@ -71,6 +71,12 @@ class Blog(models.Model):
 
     def save(self, *args, **kwargs):
         r=super(Blog, self).save(*args, **kwargs)
+        if not self.static.all():  # No static file store, add one
+            path = "%s/%s" % (self.id, "files")
+            store = Store(path=path)
+            store.save()
+            self.static.add(store)
+            r=super(Blog, self).save(*args, **kwargs)
         if self.dirty:
             blog_sync.delay(self.id)
         return r

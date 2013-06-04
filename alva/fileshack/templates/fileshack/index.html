@@ -1,7 +1,8 @@
 {% extends "fileshack/base.html" %}
 {% load staticfiles %}
 {% load i18n %}
-{% block extrahead %}
+{% block extra_head %}
+    <link rel="stylesheet" type="text/css" href="{% static "fileshack/css/base.css" %}" />
     <link rel="stylesheet" type="text/css" href="{% static "fileshack/css/fileshack.css" %}" />
     <link rel="stylesheet" type="text/css" href="{% static "fileshack/css/progress.css" %}" />
     <script type="text/javascript" src="{% static "fileshack/js/mootools.js" %}"></script>
@@ -20,7 +21,7 @@
     <script type="text/javascript" src="{% static "fileshack/js/models.js" %}"></script>
     <script type="text/javascript" src="{% static "fileshack/js/collections.js" %}"></script>
     <script type="text/javascript" src="{% static "fileshack/js/views.js" %}"></script>
-    <script type="text/javascript" src="{% static "fileshack/js/fileshack.js" %}"></script>    
+    <script type="text/javascript" src="{% static "fileshack/js/fileshack.js" %}"></script>
 {% endblock %}
 {% block controls %}
     <div id="controls">
@@ -59,7 +60,7 @@
 {% block content %}
     <div id="subcontainer">
 	<iframe src="iframe/" id="iframe" style="display: none"></iframe>
-	<form id="dropbox" action="/upload/" method="post" enctype="multipart/form-data">
+	<form id="dropbox" action="upload" method="post" enctype="multipart/form-data">
 	    <span id="dropbox-text">{% trans "Drop your item in here or click" %}</span>
 	    <span id="dropbox-text-nodragndrop" style="display: none">{% trans "Click here to upload a file" %}</span>
 	    <div id="dropbox-file">
@@ -102,7 +103,7 @@
 			<button class="info_yes">{% trans "Yes" %}</button>
 			<button class="info_no">{% trans "No" %}</button>
 			<div class="info_message">{% trans "Message" %}</div>
-		    </div>			    
+		    </div>
 		</div>
 	    </div>
 	</div>
