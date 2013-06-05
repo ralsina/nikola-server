@@ -48,8 +48,8 @@ URL_SUFFIX = getattr(settings, "URL_SUFFIX", "donewithniko.la:80")
 class Blog(models.Model):
     owner = models.ForeignKey(User, related_name="owner_of")
     members = models.ManyToManyField(User, related_name="member_of", blank=True, null=True)
-    galleries = models.ManyToManyField(Store, related_name="blog_gallery", blank=True, null=True)
-    static = models.ManyToManyField(Store, related_name="blog_static", blank=True, null=True)
+    galleries = models.ForeignKey(Store, related_name="blog_gallery", null=True)
+    static = models.ForeignKey(Store, related_name="blog_static", null=True)
     name = models.CharField(max_length=64, unique=True)
     domain = models.CharField(max_length=64, blank=True)
     title = models.CharField(max_length=128, unique=True)
@@ -71,11 +71,11 @@ class Blog(models.Model):
 
     def save(self, *args, **kwargs):
         r=super(Blog, self).save(*args, **kwargs)
-        if not self.static.all():  # No static file store, add one
+        if not self.static:  # No static file store, add one
             path = "%s/%s" % (self.id, "files")
             store = Store(path=path)
             store.save()
-            self.static.add(store)
+            self.static = store
             r=super(Blog, self).save(*args, **kwargs)
         if self.dirty:
             blog_sync.delay(self.id)

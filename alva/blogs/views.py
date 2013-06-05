@@ -2,8 +2,8 @@ from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
-from django.http import HttpResponse
-from django.shortcuts import render_to_response
+from django.http import HttpResponse, Http404
+from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
@@ -13,6 +13,8 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
 from blogs.models import Blog, Post, Story
 from blogs.forms import BlogForm, PostForm, StoryForm
+
+import fileshack.views
 
 class LoginRequiredMixin(object):
     @method_decorator(login_required)
@@ -158,3 +160,35 @@ def textile_preview(request):
                               {'preview': markup},
                               context_instance=RequestContext(request))
 
+
+def require_store_access(view):
+    def view_wrapper(request, *args, **kwargs):
+        if not kwargs.has_key("store_path"):
+            raise Http404()
+        store_path = kwargs["store_path"]
+        if  len(store_path) > 0 and store_path[-1] == "/":
+            store_path = store_path[:-1]
+        store = get_object_or_404(fileshack.views.Store, path=store_path)
+        if store.blog_static.all():
+            blog = store.blog_static.all()[0]
+        if request.user == blog.owner:
+            return view(request, *args, **kwargs)
+        if request.user in blog.members.all():
+            return view(request, *args, **kwargs)
+        else:
+            raise PermissionDenied()
+    return view_wrapper
+
+
+# Monkeypatch Fileshack views
+fileshack.views.index = require_store_access(fileshack.views.index)
+fileshack.views.iframe = require_store_access(fileshack.views.iframe)
+fileshack.views.upload = require_store_access(fileshack.views.upload)
+fileshack.views.delete = require_store_access(fileshack.views.delete)
+fileshack.views.download = require_store_access(fileshack.views.download)
+fileshack.views.update = require_store_access(fileshack.views.update)
+
+## Store creation
+#@login_required
+#@require_http_methods(["POST"])
+#def store_create(request):

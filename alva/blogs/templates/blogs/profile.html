@@ -59,7 +59,7 @@
                     <li><div class="btn-group">
                         <a class="btn btn-small" href="#post_view"><i class="icon-eye-open"></i> View</a>
                         <a class="btn btn-small" href="{% url "post_update" pk=post.id %}"><i class="icon-pencil"></i> Edit</a>
-                        <a class="btn btn-small" href="{% url "post_delete" pk=post.id %}"><i class="icon-trash"></i> Edit</a>
+                        <a class="btn btn-small" href="{% url "post_delete" pk=post.id %}"><i class="icon-trash"></i> Delete</a>
                         </div>
                     </li>
                 {% endfor %}
@@ -88,7 +88,29 @@
         </div>
 
         <div class="tab-pane" id="tab5">
+        <ul class="unstyled">
+        {% for blog in user.owner_of.all %}
+            <li><span class="lead">Static Files for "{{blog}}"</span></li>
+            <li>
+                <div class="btn-group">
+                <a class="btn btn-small" href="{% url "fileshack:index" store_path=blog.static.path %}"><i class="icon-wrench"></i> files</a>
+                <a class="btn btn-small" href="{% url "store_add" parent_path=blog.static.path %}"><i class="icon-plus"></i> Subfolder</a>
+                </div>
+            </li>
+        {% endfor %}
+        </ul>
         </div>
     </div>
 </div>
+<script>
+var url = document.location.toString();
+if (url.match('#')) {
+    $('.nav-tabs a[href=#'+url.split('#')[1]+']').tab('show') ;
+}
+
+// Change hash for page-reload
+$('.nav-tabs a').on('shown', function (e) {
+    window.location.hash = e.target.hash;
+})
+</script>
 {% endblock %}
