@@ -3,7 +3,7 @@ from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.http import HttpResponse, Http404
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
@@ -14,6 +14,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from blogs.models import Blog, Post, Story
 from blogs.forms import BlogForm, PostForm, StoryForm
 
+from fileshack.models import Store
 import fileshack.views
 
 class LoginRequiredMixin(object):
@@ -169,8 +170,8 @@ def require_store_access(view):
         if  len(store_path) > 0 and store_path[-1] == "/":
             store_path = store_path[:-1]
         store = get_object_or_404(fileshack.views.Store, path=store_path)
-        if store.blog_static.all():
-            blog = store.blog_static.all()[0]
+        blog_id = int(store.path.split('/')[0])
+        blog = get_object_or_404(Blog, id=blog_id)
         if request.user == blog.owner:
             return view(request, *args, **kwargs)
         if request.user in blog.members.all():
@@ -188,7 +189,24 @@ fileshack.views.delete = require_store_access(fileshack.views.delete)
 fileshack.views.download = require_store_access(fileshack.views.download)
 fileshack.views.update = require_store_access(fileshack.views.update)
 
-## Store creation
-#@login_required
-#@require_http_methods(["POST"])
-#def store_create(request):
+# Store creation
+@login_required
+@require_http_methods(["POST"])
+@csrf_exempt
+def store_create(request, parent_path):
+    path = request.POST.get('path')
+    if not path:
+        raise PermissionDenied()
+    a,b = parent_path.split('/')[:2]
+    blog = get_object_or_404(Blog, id=int(a))
+    if b not in ['galleries', 'files', 'listings']:
+        raise PermissionDenied()
+    if '/' in path:
+        raise PermissionDenied()
+    fullpath = '/'.join([parent_path, path]).replace('//', '/')
+    new_store = Store(path=fullpath)
+    new_store.save()
+    blog.stores.add(new_store)
+    blog.save()
+    return redirect(reverse_lazy('profile'))
+

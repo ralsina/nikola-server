@@ -50,6 +50,7 @@ class Blog(models.Model):
     members = models.ManyToManyField(User, related_name="member_of", blank=True, null=True)
     galleries = models.ForeignKey(Store, related_name="blog_gallery", null=True)
     static = models.ForeignKey(Store, related_name="blog_static", null=True)
+    stores = models.ManyToManyField(Store, null=True)
     name = models.CharField(max_length=64, unique=True)
     domain = models.CharField(max_length=64, blank=True)
     title = models.CharField(max_length=128, unique=True)
@@ -76,6 +77,12 @@ class Blog(models.Model):
             store = Store(path=path)
             store.save()
             self.static = store
+            r=super(Blog, self).save(*args, **kwargs)
+        if not self.galleries:  # No static galleries store, add one
+            path = "%s/%s" % (self.id, "galleries")
+            store = Store(path=path)
+            store.save()
+            self.galleries = store
             r=super(Blog, self).save(*args, **kwargs)
         if self.dirty:
             blog_sync.delay(self.id)

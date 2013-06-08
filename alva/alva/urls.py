@@ -31,7 +31,7 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
 
     # Fileshack
-    url(r'^filestores/add/(?P<parent_path>.*)$', blog_views.StoryCreate.as_view(), name='store_add'),
+    url(r'^filestores/add/(?P<parent_path>.*)$', blog_views.store_create, name='store_add'),
     url(r'^filestores/', include('fileshack.urls', 'fileshack')),
 
     # Markup renderers

@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load fileshack_tags %}
 
 {% block title %}Profile{% endblock %}
 
@@ -14,8 +15,7 @@
         <li class="active"><a href="#tab1" data-toggle="tab">Your Blogs</a></li>
         <li><a href="#tab2" data-toggle="tab">Your Posts</a></li>
         <li><a href="#tab3" data-toggle="tab">Your Pages</a></li>
-        <li><a href="#tab4" data-toggle="tab">Your Galleries</a></li>
-        <li><a href="#tab5" data-toggle="tab">Your Files</a></li>
+        <li><a href="#tab4" data-toggle="tab">Your Uploads</a></li>
     </ul>
     <div class="tab-content">
         <div class="tab-pane active" id="tab1">
@@ -83,42 +83,13 @@
             You have not created any pages yet.
         {% endif %}
         </div>
-
         <div class="tab-pane" id="tab4">
-        </div>
-
-        <div class="tab-pane" id="tab5">
         <ul class="unstyled">
         {% for blog in user.owner_of.all %}
-            <li><span class="lead">Static Files for "{{blog}}"</span></li>
-            <li>
-                <div class="btn-group">
-                <a class="btn btn-small" href="{% url "fileshack:index" store_path=blog.static.path %}"><i class="icon-wrench"></i> files</a>
-                <a class="btn btn-small" data-toggle="modal" data-target="#modal-files"><i class="icon-plus"></i> Subfolder</a>
-                </div>
-                <div id="modal-files" class="modal hide fade" tabindex="-1" role="dialog">
-                    <form class="form-horizontal">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                            <h3>Create Subfolder</h3>
-                        </div>
-                        <div class="modal-body">
-                            <fieldset>
-                                <label>Name:</label>
-                                <div class="input-prepend">
-                                    <span class="add-on">{{blog.static.path}}</span>
-                                    <input type="text">
-                                    </input>
-                                </div>
-                            </fieldset>
-                        </div>
-                        <div class="form-actions modal-footer">
-                            <button type="submit" class="btn btn-primary pull-right">Submit</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            </li>
+            {{blog.static|shack_item}}
+            {{blog.static|sub_shacks}}
+            {{blog.galleries|shack_item}}
+            {{blog.galleries|sub_shacks}}
         {% endfor %}
         </ul>
         </div>
