@@ -94,8 +94,30 @@
             <li>
                 <div class="btn-group">
                 <a class="btn btn-small" href="{% url "fileshack:index" store_path=blog.static.path %}"><i class="icon-wrench"></i> files</a>
-                <a class="btn btn-small" href="{% url "store_add" parent_path=blog.static.path %}"><i class="icon-plus"></i> Subfolder</a>
+                <a class="btn btn-small" data-toggle="modal" data-target="#modal-files"><i class="icon-plus"></i> Subfolder</a>
                 </div>
+                <div id="modal-files" class="modal hide fade" tabindex="-1" role="dialog">
+                    <form class="form-horizontal">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h3>Create Subfolder</h3>
+                        </div>
+                        <div class="modal-body">
+                            <fieldset>
+                                <label>Name:</label>
+                                <div class="input-prepend">
+                                    <span class="add-on">{{blog.static.path}}</span>
+                                    <input type="text">
+                                    </input>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="form-actions modal-footer">
+                            <button type="submit" class="btn btn-primary pull-right">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
             </li>
         {% endfor %}
         </ul>
