@@ -1,7 +1,5 @@
-* Implement page/story CRUD
 * Theming
 * Semi-configurable site layout
-* Look for alternatives to django-markitup (requires jquery < 1.9.0)
 * translate nav links , make nav-links configurable
 * Add search form
 * Add UI for blog membership
@@ -10,3 +8,4 @@
 * Add a job scheduler to handle post-dated posts
 * email verification goes to /accounts/profile redirect to / instead
 * Implement full account settings page (include current email addresses page/ social accounts page)
+* Make fileshack drops sync to galleries/files
