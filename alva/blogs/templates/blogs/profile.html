@@ -86,6 +86,7 @@
         <div class="tab-pane" id="tab4">
         <ul class="unstyled">
         {% for blog in user.owner_of.all %}
+            <li><span class="lead">{{blog}}</li>
             {{blog.static|shack_item}}
             {{blog.static|sub_shacks}}
             {{blog.galleries|shack_item}}

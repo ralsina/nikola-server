@@ -208,5 +208,5 @@ def store_create(request, parent_path):
     new_store.save()
     blog.stores.add(new_store)
     blog.save()
-    return redirect(reverse_lazy('profile'))
+    return redirect(reverse_lazy('profile')+"#tab4")
 
