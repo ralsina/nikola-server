@@ -5,6 +5,7 @@ import codecs
 from contextlib import contextmanager
 import json
 import os
+import shutil
 
 from django.db import models
 from django.conf import settings
@@ -197,6 +198,18 @@ def blog_sync(blog_id):
         if fname.split('.')[0] not in post_ids:
             needs_build = True
             os.unlink(os.path.join(post_folder, fname))
+
+    stores = [blog.galleries, blog.static] + list(blog.stores.all())
+    for s in stores:
+        dst_dir = os.path.join(blog.path(), *(s.path.split('/')[1:]))
+        if not os.path.isdir(dst_dir):
+            os.makedirs(dst_dir)  # FIXME: handle this being a file
+        for i in s.items.all():
+            src = i.fileobject.path
+            dst = os.path.join(dst_dir, os.path.basename(src))
+            shutil.copy(src, dst)
+            print ("===>", src,"==>", dst)
+            needs_build = True  # FIXME: be smarter
 
     if needs_build:
         build_blog(blog_id)
