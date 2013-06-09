@@ -6,6 +6,7 @@ from contextlib import contextmanager
 import json
 import os
 import shutil
+import time
 
 from django.db import models
 from django.conf import settings
@@ -44,6 +45,7 @@ MARKUP_CHOICES = (
 BASE_BLOG_PATH = getattr(settings, "BASE_BLOG_PATH", "/tmp/blogs")
 BASE_OUTPUT_PATH = getattr(settings, "BASE_OUTPUT_PATH", "/tmp/sites")
 URL_SUFFIX = getattr(settings, "URL_SUFFIX", "donewithniko.la:80")
+BACKUP_OUTPUT_PATH = os.path.join(getattr(settings, "MEDIA_ROOT", ""), "backups")
 
 
 class Blog(models.Model):
@@ -143,6 +145,17 @@ class Story(Post):
 
 
 # Tasks that are delegated to RQ
+
+@django_rq.job
+def backup_blog(blog_id):
+    blog = Blog.objects.get(id=blog_id)
+    path = blog.path()
+    fname = "%s.zip" % blog.name
+    if not os.path.isdir(BACKUP_OUTPUT_PATH):
+        os.makedirs(BACKUP_OUTPUT_PATH)
+    fname = os.path.join(BACKUP_OUTPUT_PATH, fname)
+    subprocess.check_call(["zip", fname, path, "-r"])
+
 
 @django_rq.job
 def init_blog(blog_id):
