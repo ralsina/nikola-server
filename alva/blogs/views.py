@@ -162,7 +162,7 @@ def textile_preview(request):
                               context_instance=RequestContext(request))
 
 
-def require_store_access(view):
+def require_store_access(view, makes_dirty = False):
     def view_wrapper(request, *args, **kwargs):
         if not kwargs.has_key("store_path"):
             raise Http404()
@@ -172,22 +172,22 @@ def require_store_access(view):
         store = get_object_or_404(fileshack.views.Store, path=store_path)
         blog_id = int(store.path.split('/')[0])
         blog = get_object_or_404(Blog, id=blog_id)
-        if request.user == blog.owner:
-            return view(request, *args, **kwargs)
-        if request.user in blog.members.all():
+        if request.user == blog.owner or request.user in blog.members.all():
+            if makes_dirty:
+                blog.dirty = True
+                blog.save()
             return view(request, *args, **kwargs)
         else:
             raise PermissionDenied()
     return view_wrapper
 
-
 # Monkeypatch Fileshack views
 fileshack.views.index = require_store_access(fileshack.views.index)
 fileshack.views.iframe = require_store_access(fileshack.views.iframe)
-fileshack.views.upload = require_store_access(fileshack.views.upload)
-fileshack.views.delete = require_store_access(fileshack.views.delete)
+fileshack.views.upload = require_store_access(fileshack.views.upload, True)
+fileshack.views.delete = require_store_access(fileshack.views.delete, True)
 fileshack.views.download = require_store_access(fileshack.views.download)
-fileshack.views.update = require_store_access(fileshack.views.update)
+fileshack.views.update = require_store_access(fileshack.views.update, True)
 
 # Store creation
 @login_required
