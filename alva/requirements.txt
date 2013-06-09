@@ -2,7 +2,7 @@ Django==1.5.1
 Mako==0.8.0
 Markdown==2.3.1
 MarkupSafe==0.18
-Nikola==5.4.4
+-e git+git://github.com/ralsina/nikola.git#egg=Nikola
 Pillow==2.0.0
 PyRSS2Gen==1.1
 Pygments==1.6

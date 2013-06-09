@@ -204,12 +204,22 @@ def blog_sync(blog_id):
         dst_dir = os.path.join(blog.path(), *(s.path.split('/')[1:]))
         if not os.path.isdir(dst_dir):
             os.makedirs(dst_dir)  # FIXME: handle this being a file
+        file_names = set([])
         for i in s.items.all():
             src = i.fileobject.path
-            dst = os.path.join(dst_dir, os.path.basename(src))
-            shutil.copy(src, dst)
-            print ("===>", src,"==>", dst)
-            needs_build = True  # FIXME: be smarter
+            fname = os.path.basename(src)
+            dst = os.path.join(dst_dir, fname)
+            file_names.add(fname)
+            if not os.path.isfile(dst) or os.stat(dst).st_mtime < os.stat(src).st_mtime:
+                shutil.copy(src, dst)
+                needs_build = True
+
+        real_files = set(os.listdir(dst_dir))
+        for fname in (real_files - file_names):
+            fname = os.path.join(dst_dir, fname)
+            if os.path.isfile(fname):
+                os.unlink(fname)
+                needs_build = True
 
     if needs_build:
         build_blog(blog_id)
@@ -220,7 +230,7 @@ def build_blog(blog_id):
     with cd(blog.path()):
         os.system("nikola build")
         # This is not yet available on any Nikola release
-        #os.system("nikola check --clean-files")
+        os.system("nikola check --clean-files")
     blog.dirty = False
     blog.save()
 
