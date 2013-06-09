@@ -8,4 +8,4 @@
 * Add a job scheduler to handle post-dated posts
 * email verification goes to /accounts/profile redirect to / instead
 * Implement full account settings page (include current email addresses page/ social accounts page)
-* Make fileshack drops sync to galleries/files
+* Make fileshack drops mark blogs for rebuild
