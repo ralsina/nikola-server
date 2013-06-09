@@ -3,6 +3,7 @@ from __future__ import unicode_literals, print_function
 
 import codecs
 from contextlib import contextmanager
+from datetime import datetime
 import json
 import os
 import shutil
@@ -133,7 +134,11 @@ class Post(models.Model):
     def save(self, *args, **kwargs):
         r = super(Post, self).save(*args, **kwargs)
         if self.dirty:
-            blog_sync.delay(self.blog.id)
+            if self.date <= datetime.now():
+                blog_sync.delay(self.blog.id)
+            else:
+                scheduler = django_rq.get_scheduler('default')
+                scheduler.enqueue_at(self.date, blog_sync.delay, self.blog.id)
         return r
 
     def __unicode__(self):

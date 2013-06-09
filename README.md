@@ -12,3 +12,7 @@ python manage.py rqworker default
 To start the test server:
 
 python manage.py runserver
+
+To start the scheduler (useful for post-dated posts):
+
+rqscheduler
