@@ -43,6 +43,70 @@ MARKUP_CHOICES = (
     ('textile', 'Textile'),
 )
 
+THEME_CHOICES = (
+    "blogtxt",
+    "default",
+    "default_amelia",
+    "default_cerulean",
+    "default_cosmo",
+    "default_cyborg",
+    "default_flatly",
+    "default_journal",
+    "default_readable",
+    "default_simplex",
+    "default_slate",
+    "default_spacelab",
+    "default_spruce",
+    "default_superhero",
+    "default_united",
+    "jinja-default",
+    "jinja-default_amelia",
+    "jinja-default_cerulean",
+    "jinja-default_cosmo",
+    "jinja-default_cyborg",
+    "jinja-default_flatly",
+    "jinja-default_journal",
+    "jinja-default_readable",
+    "jinja-default_simplex",
+    "jinja-default_slate",
+    "jinja-default_spacelab",
+    "jinja-default_spruce",
+    "jinja-default_superhero",
+    "jinja-default_united",
+    "jinja-site",
+    "monospace",
+    "orphan",
+    "readable",
+    "readable_amelia",
+    "readable_cerulean",
+    "readable_cosmo",
+    "readable_cyborg",
+    "readable_flatly",
+    "readable_journal",
+    "readable_readable",
+    "readable_simplex",
+    "readable_slate",
+    "readable_spacelab",
+    "readable_spruce",
+    "readable_superhero",
+    "readable_united",
+    "site",
+    "site-reveal",
+    "site_amelia",
+    "site_cerulean",
+    "site_cosmo",
+    "site_cyborg",
+    "site_flatly",
+    "site_journal",
+    "site_readable",
+    "site_simplex",
+    "site_slate",
+    "site_spacelab",
+    "site_spruce",
+    "site_superhero",
+    "site_united",
+)
+THEME_CHOICES = [(x,x) for x in THEME_CHOICES]
 
 BASE_BLOG_PATH = getattr(settings, "BASE_BLOG_PATH", "/tmp/blogs")
 BASE_OUTPUT_PATH = getattr(settings, "BASE_OUTPUT_PATH", "/tmp/sites")
@@ -60,6 +124,7 @@ class Blog(models.Model):
     domain = models.CharField(max_length=64, blank=True)
     title = models.CharField(max_length=128, unique=True)
     language = models.CharField(max_length=9, choices=LANGUAGE_CHOICES, default='en')
+    theme = models.CharField(max_length=64, choices=THEME_CHOICES, default='site')
     description = models.TextField(max_length=500, blank=True)
     dirty = models.BooleanField(default=False)
 
