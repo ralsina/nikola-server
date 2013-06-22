@@ -256,7 +256,7 @@ def blog_sync(blog_id):
         needs_build = True
         save_blog_config(blog)
 
-    if not os.path.isdir(os.path.join(blog.pah(), 'themes', blog.theme)):
+    if not os.path.isdir(os.path.join(blog.path(), 'themes', blog.theme)):
         with cd(blog.path):
             os.system("nikola install_theme {0}".format(blog.theme))
 
