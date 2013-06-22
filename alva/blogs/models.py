@@ -10,6 +10,7 @@ import shutil
 import time
 
 from django.db import models
+from django.db.models import signals
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.template import Context, loader
@@ -75,6 +76,7 @@ class Blog(models.Model):
             return "http://"+self.name+".donewithniko.la"
 
     def save(self, *args, **kwargs):
+        self.dirty = False
         r=super(Blog, self).save(*args, **kwargs)
         if not self.static:  # No static file store, add one
             path = "%s/%s" % (self.id, "files")
@@ -88,12 +90,12 @@ class Blog(models.Model):
             store.save()
             self.galleries = store
             r=super(Blog, self).save(*args, **kwargs)
-        if self.dirty:
-            blog_sync.delay(self.id)
+        self.dirty = True
         return r
 
     def __unicode__(self):
         return self.title
+
 
 class Post(models.Model):
     author = models.ForeignKey(User)
@@ -135,10 +137,15 @@ class Post(models.Model):
         r = super(Post, self).save(*args, **kwargs)
         if self.dirty:
             if self.date <= datetime.now():
-                blog_sync.delay(self.blog.id)
+                self.blog.dirty = True
+                self.blog.save()
             else:
                 scheduler = django_rq.get_scheduler('default')
-                scheduler.enqueue_at(self.date, blog_sync.delay, self.blog.id)
+                scheduler.enqueue_at(
+                    self.date,
+                    blog_sync.delay,
+                    kwargs={'blog_id': self.blog.id}
+                )
         return r
 
     def __unicode__(self):
@@ -163,32 +170,9 @@ def backup_blog(blog_id):
 
 
 @django_rq.job
-def init_blog(blog_id):
+def init_blog(blog):
     """Create the initial structure of the blog."""
-    blog = Blog.objects.get(id=blog_id)
     os.system("nikola init {0}".format(blog.path()))
-
-@django_rq.job
-def save_blog_config(blog_id):
-    blog = Blog.objects.get(id=blog_id)
-    config_path = os.path.join(blog.path(), "conf.py")
-    conf_data_path = os.path.join(blog.path(), "conf.json")
-    with codecs.open(config_path, "wb+", "utf-8") as f:
-        template = loader.get_template('blogs/conf.tmpl')
-        context = Context()
-        data = template.render(context)
-        f.write(data)
-    with codecs.open(conf_data_path, "wb+", "utf-8") as f:
-        data = json.dump(dict(
-            BLOG_AUTHOR=" ".join([blog.owner.first_name, blog.owner.last_name]),
-            BLOG_TITLE=blog.title,
-            SITE_URL=blog.url(),
-            BLOG_EMAIL=blog.owner.email,
-            BLOG_DESCRIPTION=blog.description,
-            DEFAULT_LANG=blog.language,
-            OUTPUT_FOLDER=blog.output_path(),
-            ), f, skipkeys=True, sort_keys=True)
-
 
 @django_rq.job
 def blog_sync(blog_id):
@@ -196,12 +180,12 @@ def blog_sync(blog_id):
     needs_build = False
     blog = Blog.objects.get(id=blog_id)
     if not os.path.isdir(blog.path()):
-        init_blog(blog_id)
+        init_blog(blog)
         needs_build = True
 
     if blog.dirty:
         needs_build = True
-        save_blog_config(blog_id)
+        save_blog_config(blog)
 
     post_ids = set([])
     for post in blog.post_set.all():
@@ -242,7 +226,6 @@ def blog_sync(blog_id):
     if needs_build:
         build_blog(blog_id)
 
-@django_rq.job
 def build_blog(blog_id):
     blog = Blog.objects.get(id=blog_id)
     with cd(blog.path()):
@@ -251,6 +234,37 @@ def build_blog(blog_id):
         os.system("nikola check --clean-files")
     blog.dirty = False
     blog.save()
+
+
+def save_blog_config(blog):
+    config_path = os.path.join(blog.path(), "conf.py")
+    conf_data_path = os.path.join(blog.path(), "conf.json")
+    with codecs.open(config_path, "wb+", "utf-8") as f:
+        template = loader.get_template('blogs/conf.tmpl')
+        context = Context()
+        data = template.render(context)
+        f.write(data)
+    with codecs.open(conf_data_path, "wb+", "utf-8") as f:
+        data = json.dump(dict(
+            BLOG_AUTHOR=" ".join([blog.owner.first_name, blog.owner.last_name]),
+            BLOG_TITLE=blog.title,
+            SITE_URL=blog.url(),
+            BLOG_EMAIL=blog.owner.email,
+            BLOG_DESCRIPTION=blog.description,
+            DEFAULT_LANG=blog.language,
+            OUTPUT_FOLDER=blog.output_path(),
+            ), f, skipkeys=True, sort_keys=True)
+
+
+# Connecting rq jobs to Django signals
+def blog_sync_slot(sender, instance=None, **kwargs):
+    if not instance or not instance.dirty:
+        return
+    blog_sync.delay(instance.id)
+
+
+signals.post_save.connect(blog_sync_slot, sender=Blog)
+
 
 # Utility thingies
 
