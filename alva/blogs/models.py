@@ -321,6 +321,7 @@ def save_blog_config(blog):
             BLOG_DESCRIPTION=blog.description,
             DEFAULT_LANG=blog.language,
             OUTPUT_FOLDER=blog.output_path(),
+            THEME=blog.theme,
             ), f, skipkeys=True, sort_keys=True)
 
 
