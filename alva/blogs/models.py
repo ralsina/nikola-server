@@ -156,6 +156,7 @@ class Blog(models.Model):
             self.galleries = store
             r=super(Blog, self).save(*args, **kwargs)
         self.dirty = True
+        r=super(Blog, self).save(*args, **kwargs)
         return r
 
     def __unicode__(self):
@@ -255,6 +256,10 @@ def blog_sync(blog_id):
         needs_build = True
         save_blog_config(blog)
 
+    if not os.path.isdir(os.path.join(blog.pah(), 'themes', blog.theme)):
+        with cd(blog.path):
+            os.system("nikola install_theme {0}".format(blog.theme))
+
     post_ids = set([])
     for post in blog.post_set.all():
         post_ids.add(str(post.id))
@@ -327,8 +332,11 @@ def save_blog_config(blog):
 
 # Connecting rq jobs to Django signals
 def blog_sync_slot(sender, instance=None, **kwargs):
+    print("SLOT")
     if not instance or not instance.dirty:
+        print("Not syncing")
         return
+    print("Syncing")
     blog_sync.delay(instance.id)
 
 
