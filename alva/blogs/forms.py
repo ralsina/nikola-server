@@ -20,7 +20,7 @@ class NameWidget(BootstrapTextInput):
 class BlogForm(forms.ModelForm):
     class Meta:
         model = Blog
-        fields = ('name', 'title', 'description', 'language', 'dirty')
+        fields = ('name', 'title', 'description', 'language', 'theme', 'dirty')
         exclude = ('owner', 'members', 'domain')
         widgets = {
             'name': NameWidget,
