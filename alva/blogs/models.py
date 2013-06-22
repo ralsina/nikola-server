@@ -118,6 +118,9 @@ class Post(models.Model):
     def path(self):
         return os.path.join(self.blog.path(), self.folder, "%d.%s" % (self.id, self.markup))
 
+    def url(self):
+        return ('/'.join([self.blog.url(), self.folder, self.slug + '.html']))
+
     def save_to_disk(self):
         template = loader.get_template('blogs/%s.tmpl' % self.markup)
         context = Context(dict(

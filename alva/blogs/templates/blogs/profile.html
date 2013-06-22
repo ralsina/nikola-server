@@ -57,7 +57,7 @@
                 {% for post in user.post_set.all %}
                     <li><span class="lead">{{post.title}}</span> at {{post.date}} in <span class="label label-info">{{post.blog}}</li>
                     <li><div class="btn-group">
-                        <a class="btn btn-small" href="#post_view"><i class="icon-eye-open"></i> View</a>
+                        <a class="btn btn-small" href="{{post.url}}"><i class="icon-eye-open"></i> View</a>
                         <a class="btn btn-small" href="{% url "post_update" pk=post.id %}"><i class="icon-pencil"></i> Edit</a>
                         <a class="btn btn-small" href="{% url "post_delete" pk=post.id %}"><i class="icon-trash"></i> Delete</a>
                         </div>
