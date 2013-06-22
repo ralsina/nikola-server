@@ -257,7 +257,7 @@ def blog_sync(blog_id):
         save_blog_config(blog)
 
     if not os.path.isdir(os.path.join(blog.path(), 'themes', blog.theme)):
-        with cd(blog.path):
+        with cd(blog.path()):
             os.system("nikola install_theme {0}".format(blog.theme))
 
     post_ids = set([])
