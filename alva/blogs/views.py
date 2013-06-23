@@ -82,7 +82,7 @@ class PostCreate(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.author = self.request.user
         blog = form.instance.blog
-        if self.request.user != blog.owner and self.request.user not in blog.members.objects.all():
+        if self.request.user != blog.owner and self.request.user not in blog.members.all():
             raise forms.ValidationError("You can't post in that blog.")
         return super(PostCreate, self).form_valid(form)
 
