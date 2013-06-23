@@ -141,7 +141,6 @@ class Blog(models.Model):
             return "http://"+self.name+".donewithniko.la"
 
     def save(self, *args, **kwargs):
-        self.dirty = False
         r=super(Blog, self).save(*args, **kwargs)
         if not self.static:  # No static file store, add one
             path = "%s/%s" % (self.id, "files")
@@ -155,8 +154,8 @@ class Blog(models.Model):
             store.save()
             self.galleries = store
             r=super(Blog, self).save(*args, **kwargs)
-        self.dirty = True
         r=super(Blog, self).save(*args, **kwargs)
+        blog_sync.delay(self.id)
         return r
 
     def __unicode__(self):
@@ -252,9 +251,8 @@ def blog_sync(blog_id):
         init_blog(blog)
         needs_build = True
 
-    if blog.dirty:
-        needs_build = True
-        save_blog_config(blog)
+    needs_build = True
+    save_blog_config(blog)
 
     post_ids = set([])
     for post in blog.post_set.all():
@@ -301,8 +299,6 @@ def build_blog(blog_id):
         os.system("nikola build")
         # This is not yet available on any Nikola release
         os.system("nikola check --clean-files")
-    blog.dirty = False
-    blog.save()
 
 
 def save_blog_config(blog):
@@ -324,19 +320,6 @@ def save_blog_config(blog):
             OUTPUT_FOLDER=blog.output_path(),
             THEME=blog.theme,
             ), f, skipkeys=True, sort_keys=True)
-
-
-# Connecting rq jobs to Django signals
-def blog_sync_slot(sender, instance=None, **kwargs):
-    print("SLOT")
-    if not instance or not instance.dirty:
-        print("Not syncing")
-        return
-    print("Syncing")
-    blog_sync.delay(instance.id)
-
-
-signals.post_save.connect(blog_sync_slot, sender=Blog)
 
 
 # Utility thingies
