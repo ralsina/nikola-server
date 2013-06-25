@@ -1,0 +1,29 @@
+server {
+    index index.html index.htm;
+    listen 184.82.108.15:80;
+    client_max_body_size 10M;
+    server_name {{domain_name}} www.{{domain_name}};
+    # no security problem here, since / is alway passed to upstream
+    root /path/to/test/hello;
+    location / {
+        proxy_pass_header Server;
+        proxy_set_header Host $http_host;
+        proxy_redirect off;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Scheme $scheme;
+        proxy_connect_timeout 10;
+        proxy_read_timeout 10;
+        proxy_pass http://localhost:9000/;
+    }
+    location /monit/ {
+        proxy_pass_header Server;
+        proxy_set_header Host $http_host;
+        proxy_redirect off;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Scheme $scheme;
+        proxy_connect_timeout 10;
+        proxy_read_timeout 10;
+        proxy_pass http://localhost:2812/;
+    }
+}
+

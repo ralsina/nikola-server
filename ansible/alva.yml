@@ -1,0 +1,72 @@
+---
+# Create alva user
+- name: create alva user
+  action: user name=alva
+  
+# Install required packages
+- name: Prepare apt
+  action: command apt-get -y install python-apt
+- name: Install packages
+  action: apt pkg=$item state=installed
+  with_items:
+    - python-virtualenv
+    - redis-server
+    - nginx
+    - monit
+    - exim4
+    - mysql-server
+    - libjpeg62-dev
+    - python-dev
+    - libmysqlclient-dev
+    - zlib1g-dev
+    - libxml2-dev
+    - libxslt1-dev
+    - git
+# Clone/pull required repos
+- name: Clone/Pull/Install alva
+  action: git repo=git://github.com/ralsina/nikola-server.git dest=/home/alva/git/nikola-server
+- name: Install Alva requirements
+  action: pip virtualenv=$venv requirements=/home/alva/git/nikola-server/alva/requirements.txt
+- name: Install Python Packages
+  action: pip state=present virtualenv=$venv use_mirrors=yes name=$item
+  with_items:
+    - distribute
+    - mysql-python
+    - gunicorn
+    
+- name: Clone/Pull themes repo
+  action: git repo=git://github.com/ralsina/nikola-themes.git dest=/home/alva/git/nikola-themes
+  action: shell cp -Rv /home/alva/git/nikola-themes/themes/* $venv/src/nikola/nikola/data/themes/
+
+# Setup configurations
+- name: Install startstop
+  copy: src=startstop.sh dest=/bin/startstop.sh owner=root mode=0755
+- name: Copy monit's alva.conf
+  copy: src=monit-alva.conf dest=/etc/monit/conf.d/alva.conf
+- name: Configure monitrc
+  template: src=monitrc dest=/etc/monit/monitrc owner=root mode=0600
+- name: Configure nginx
+  template: src=nginx-default dest=/etc/nginx/sites-available/default owner=root mode=0644
+  
+- name: Create folders
+  action: file path=$base_output_path/ owner=root mode=4777 state=directory
+  action: file path=$base_output_path/static.$domain_name:80/static/media owner=root mode=4777 state=directory
+  action: file path=$base_blog_path owner=alva mode=755 state=directory
+  
+# Start monit which starts everything else
+- name: Start services
+  service: name=$item enabled=yes state=restarted
+  with_items:
+      - nginx
+      - monit
+      - redis-server
+      - exim4
+      - mysql
+  
+# Update Django DBs
+- name: Django config
+  action: template src=settings.py dest=$django_path/alva/settings.py
+- name: Django DB sync      
+  action: shell $venv/bin/python $django_path/manage.py syncdb
+  action: shell $venv/bin/python $django_path/manage.py migrate
+  action: shell $venv/bin/python $django_path/manage.py collectstatic --noinput
