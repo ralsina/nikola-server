@@ -1,18 +1,16 @@
 - hosts: alva
+  vars:
+    venv: /home/alva/venv
+    django_path: /home/alva/git/nikola-server/alva/
+    domain_name: donewithniko.la
+    
+    monit_pass: USEAREALPASSWORDHERE
+    
+    mysql_db: alva
+    mysql_user: USER
+    mysql_pass: PASS
+    
+    base_blog_path: /srv/alva
+    base_output_path: /srv/www
   tasks:
-
     - include: alva.yml
-
-      vars:
-        venv: /home/alva/venv
-        django_path: /home/alva/git/nikola-server/alva/
-        domain_name: donewithniko.la
-        
-        monit_pass: USEAREALPASSWORDHERE
-        
-        mysql_db: alva
-        mysql_user: USER
-        mysql_pass: PASSWORD
-          
-        base_blog_path: /srv/alva
-        base_output_path: /srv/www
