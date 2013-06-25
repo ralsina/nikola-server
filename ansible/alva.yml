@@ -23,6 +23,7 @@
     - libxml2-dev
     - libxslt1-dev
     - git
+    - python-mysqldb
 # Clone/pull required repos
 - name: Clone/Pull/Install alva
   action: git repo=git://github.com/ralsina/nikola-server.git dest=/home/alva/git/nikola-server
@@ -34,6 +35,7 @@
     - distribute
     - mysql-python
     - gunicorn
+    - jinja2
     
 - name: Clone/Pull themes repo
   action: git repo=git://github.com/ralsina/nikola-themes.git dest=/home/alva/git/nikola-themes
@@ -72,6 +74,10 @@
       - exim4
       - mysql
   
+# Ensure DB is setup correctly
+# - name: Check MySQL user
+#   mysql_user: user=$mysql_user password=$mysql_pass login_user=$mysql_user login_password=$mysql_pass priv=alva.*:ALL state=present
+
 # Update Django DBs
 - name: Django config
   action: template src=settings.py dest=$django_path/alva/settings.py

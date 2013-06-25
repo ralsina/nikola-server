@@ -1,6 +1,11 @@
 server {
+    client_max_body_size 10M;
+    server_name "~^(?<name>.*)$";
+    root {{base_output_path}}/$name:80;
+}
+server {
     index index.html index.htm;
-    listen 184.82.108.15:80;
+    listen 0.0.0.0:80;
     client_max_body_size 10M;
     server_name {{domain_name}} www.{{domain_name}};
     # no security problem here, since / is alway passed to upstream
