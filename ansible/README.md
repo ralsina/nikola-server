@@ -1,3 +1,6 @@
+**WARNING** This may completely obliterate your server, dude, it makes no attempt to not break other stuff,
+only use if you know what you are doing, or if the server is a fresh machine with nothing interesting in it.
+
 To deploy Alva in your own Debian or Ubuntu server:
 
 * Install ansible in your computer
