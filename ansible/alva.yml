@@ -53,6 +53,14 @@
   action: file path=$base_output_path/ owner=root mode=4777 state=directory
   action: file path=$base_output_path/static.$domain_name:80/static/media owner=root mode=4777 state=directory
   action: file path=$base_blog_path owner=alva mode=755 state=directory
+
+# Stop django services
+- name: Stop Django services
+  action: command /bin/startstop.sh stop $item
+  with_items:
+    - gunicorn
+    - rqworker
+    - rqscheduler
   
 # Start monit which starts everything else
 - name: Start services
