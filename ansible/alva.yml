@@ -39,6 +39,7 @@
     
 - name: Clone/Pull themes repo
   action: git repo=git://github.com/ralsina/nikola-themes.git dest=/home/alva/git/nikola-themes
+- name: Install themes
   action: shell cp -Rv /home/alva/git/nikola-themes/themes/* $venv/src/nikola/nikola/data/themes/
 
 # Setup configurations
