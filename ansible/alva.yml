@@ -57,7 +57,16 @@
   action: file path=$base_output_path/static.$domain_name:80/static/media owner=root mode=4777 state=directory
   action: file path=$base_blog_path owner=alva mode=755 state=directory
 
-# Stop django services
+# Restart services
+- name: Start services
+  service: name=$item enabled=yes state=restarted
+  with_items:
+      - nginx
+      - redis-server
+      - exim4
+      - mysql
+
+# Stop django services (they will be restarted by monit)
 - name: Stop Django services
   action: command /bin/startstop.sh stop $item
   with_items:
@@ -69,11 +78,7 @@
 - name: Start services
   service: name=$item enabled=yes state=restarted
   with_items:
-      - nginx
       - monit
-      - redis-server
-      - exim4
-      - mysql
   
 # Ensure DB is setup correctly
 # - name: Check MySQL user
