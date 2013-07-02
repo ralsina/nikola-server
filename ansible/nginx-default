@@ -7,7 +7,7 @@ server {
     index index.html index.htm;
     listen 0.0.0.0:80;
     client_max_body_size 10M;
-    server_name {{domain_name}} www.{{domain_name}};
+    server_name {{domain_name}} www.{{domain_name}} localhost localhost.localdomain;
     # no security problem here, since / is alway passed to upstream
     root /path/to/test/hello;
     location / {
