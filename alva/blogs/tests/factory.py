@@ -11,5 +11,6 @@ def create_author(username='author', password='secret', email='author@example.co
 
 def create_blog(owner=None):
     owner = owner or create_author()
-    return Blog.objects.get_or_create(owner=owner)
+    blog, is_created = Blog.objects.get_or_create(owner=owner)
+    return blog 
 
