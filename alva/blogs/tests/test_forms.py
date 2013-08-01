@@ -16,7 +16,7 @@ class TestPostForm(TestCase):
         form = PostForm() 
         self.assertFalse(form.is_valid())
 
-    def test_post_valid_form(self):
+    def test_create_valid_post(self):
         data = {
             'blog': 1,
             'date_0': '01/08/2013 09:20',
