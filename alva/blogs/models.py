@@ -254,19 +254,8 @@ def blog_sync(blog_id):
     needs_build = True
     save_blog_config(blog)
 
-    post_ids = set([])
-    for post in blog.post_set.all():
-        post_ids.add(str(post.id))
-        if post.dirty or not os.path.exists(post.path()):
-            needs_build = True
-            post.dirty=False
-            post.save_to_disk()
-
-    post_folder = os.path.join(blog.path(), Post.folder)
-    for fname in os.listdir(post_folder):
-        if fname.split('.')[0] not in post_ids:
-            needs_build = True
-            os.unlink(os.path.join(post_folder, fname))
+    _syncronize_database_with_files(blog, blog.post_set.all(), Post.folder)
+    _syncronize_database_with_files(blog, blog.story_set.all(), Story.folder)
 
     stores = [blog.galleries, blog.static] + list(blog.stores.all())
     for s in stores:
@@ -292,6 +281,31 @@ def blog_sync(blog_id):
 
     if needs_build:
         build_blog(blog_id)
+
+
+def _syncronize_database_with_files(blog, content_list, folder):
+    content_ids = _generate_files_for_new_content(content_list)
+    _remove_deleted_content(blog, content_ids, folder)
+
+
+def _generate_files_for_new_content(content_list):
+    content_ids = set([])
+    for content in content_list:
+        content_ids.add(str(content.id))
+        if content.dirty or not os.path.exists(content.path()):
+            needs_build = True
+            content.dirty = False
+            content.save_to_disk()
+    return content_ids
+
+
+def _remove_deleted_content(blog, content_ids, folder):
+    content_folder = os.path.join(blog.path(), folder)
+    for fname in os.listdir(content_folder):
+        if fname.split('.')[0] not in content_ids:
+            needs_build = True
+            os.unlink(os.path.join(content_folder, fname))
+
 
 def build_blog(blog_id):
     blog = Blog.objects.get(id=blog_id)
