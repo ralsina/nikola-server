@@ -1,7 +1,7 @@
 from django.test import TestCase
 
-from blogs.forms import PostForm
-from blogs.models import Post
+from blogs.forms import PostForm, StoryForm
+from blogs.models import Post, Story
 from blogs.tests import factory
 
 
@@ -30,4 +30,16 @@ class TestPostForm(TestCase):
         }
         form = PostForm(data=data)
         self.assertTrue(form.is_valid())
+
+
+class TestPostStory(TestCase):
+    def setUp(self):
+        factory.create_blog()
+
+    def test_story_form_is_for_story_model(self):
+        self.assertEqual(Story, StoryForm.Meta.model)
+        
+    def test_empty_form_is_not_valid(self):
+        form = StoryForm() 
+        self.assertFalse(form.is_valid())
 
