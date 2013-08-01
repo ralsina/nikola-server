@@ -44,8 +44,6 @@ class TestPostStory(BaseTestCase):
         self.assertFalse(form.is_valid())
 
     def test_create_valid_story_on_newyear_eve(self):
-        data = self.data.copy()
-        data['date'] = '12/31/2013 00:16'
-        form = StoryForm(data=data)
+        form = StoryForm(data=self.data)
         self.assertTrue(form.is_valid(), form.errors)
 
