@@ -1,3 +1,7 @@
+"""Factory functions for creating models in test data preparation. This class 
+in not intended to be used in business logic.
+"""
+
 from django.contrib.auth.models import User
 
 from blogs.models import Blog
