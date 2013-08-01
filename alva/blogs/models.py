@@ -162,7 +162,7 @@ class Blog(models.Model):
         return self.title
 
 
-class Post(models.Model):
+class Content(models.Model):
     author = models.ForeignKey(User)
     blog = models.ForeignKey(Blog)
     title = models.CharField(max_length=128)
@@ -174,11 +174,8 @@ class Post(models.Model):
     dirty = models.BooleanField(default=True)
     markup = models.CharField(max_length=30, choices=MARKUP_CHOICES, default='rest')
 
-    folder = "posts"
-
     class Meta:
-        unique_together = (('slug', 'blog'),)
-        ordering = ['-date']
+        abstract = True
 
     def path(self):
         return os.path.join(self.blog.path(), self.folder, "%d.%s" % (self.id, self.markup))
@@ -202,7 +199,7 @@ class Post(models.Model):
             f.write(data)
 
     def save(self, *args, **kwargs):
-        r = super(Post, self).save(*args, **kwargs)
+        r = super(Content, self).save(*args, **kwargs)
         if self.dirty:
             if self.date <= datetime.now():
                 self.blog.dirty = True
@@ -219,10 +216,21 @@ class Post(models.Model):
     def __unicode__(self):
         return "{0} ({1}) in {2}".format(self.title, self.date.strftime('%Y-%m-%d %H:%M'), self.blog)
 
-class Story(Post):
 
+class Post(Content):
+    folder = "posts"
+
+    class Meta:
+        unique_together = (('slug', 'blog'),)
+        ordering = ['-date']
+
+
+class Story(Content):
     folder = "stories"
 
+    class Meta:
+        unique_together = (('slug', 'blog'),)
+        ordering = ['-date']
 
 # Tasks that are delegated to RQ
 
