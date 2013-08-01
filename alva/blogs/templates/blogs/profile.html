@@ -70,18 +70,21 @@
         </div>
 
         <div class="tab-pane" id="tab3">
-        {% if user.story_set.all %}
-            <ul>
-            {% for story in user.story_set.all %}
-                <li>
-                <a href="{% url "story_update" pk=story.id%}">{{story}}</a> |
-                <a href="{% url "story_delete" pk=story.id%}">Delete</a>
-                </li>
-            {% endfor %}
-            </ul>
-        {% else %}
-            You have not created any pages yet.
-        {% endif %}
+            {% if user.story_set.all %}
+                <ul class="unstyled">
+                {% for story in user.story_set.all %}
+                    <li><span class="lead">{{story.title}}</span> at {{story.date}} in <span class="label label-info">{{story.blog}}</li>
+                    <li><div class="btn-group">
+                        <a class="btn btn-small" href="{{story.url}}"><i class="icon-eye-open"></i> View</a>
+                        <a class="btn btn-small" href="{% url "story_update" pk=story.id %}"><i class="icon-pencil"></i> Edit</a>
+                        <a class="btn btn-small" href="{% url "story_delete" pk=story.id %}"><i class="icon-trash"></i> Delete</a>
+                        </div>
+                    </li>
+                {% endfor %}
+                </ul>
+            {% else %}
+                You have not created any pages yet.
+            {% endif %}
         </div>
         <div class="tab-pane" id="tab4">
         <ul class="unstyled">
