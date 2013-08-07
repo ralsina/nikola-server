@@ -81,6 +81,5 @@ class PostForm(forms.ModelForm):
         return True
 
 class StoryForm(forms.ModelForm):
-    class Meta:
+    class Meta (PostForm.Meta):
         model = Story
-        exclude = ('author',)
