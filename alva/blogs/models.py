@@ -162,7 +162,7 @@ class Blog(models.Model):
         return self.title
 
 
-class Content(models.Model):
+class Post(models.Model):
     author = models.ForeignKey(User)
     blog = models.ForeignKey(Blog)
     title = models.CharField(max_length=128)
@@ -174,8 +174,11 @@ class Content(models.Model):
     dirty = models.BooleanField(default=True)
     markup = models.CharField(max_length=30, choices=MARKUP_CHOICES, default='rest')
 
+    folder = "posts"
+
     class Meta:
-        abstract = True
+        unique_together = (('slug', 'blog'),)
+        ordering = ['-date']
 
     def path(self):
         return os.path.join(self.blog.path(), self.folder, "%d.%s" % (self.id, self.markup))
@@ -199,7 +202,7 @@ class Content(models.Model):
             f.write(data)
 
     def save(self, *args, **kwargs):
-        r = super(Content, self).save(*args, **kwargs)
+        r = super(Post, self).save(*args, **kwargs)
         if self.dirty:
             if self.date <= datetime.now():
                 self.blog.dirty = True
@@ -216,21 +219,10 @@ class Content(models.Model):
     def __unicode__(self):
         return "{0} ({1}) in {2}".format(self.title, self.date.strftime('%Y-%m-%d %H:%M'), self.blog)
 
+class Story(Post):
 
-class Post(Content):
-    folder = "posts"
-
-    class Meta:
-        unique_together = (('slug', 'blog'),)
-        ordering = ['-date']
-
-
-class Story(Content):
     folder = "stories"
 
-    class Meta:
-        unique_together = (('slug', 'blog'),)
-        ordering = ['-date']
 
 # Tasks that are delegated to RQ
 
@@ -262,8 +254,19 @@ def blog_sync(blog_id):
     needs_build = True
     save_blog_config(blog)
 
-    _syncronize_database_with_files(blog, blog.post_set.all(), Post.folder)
-    _syncronize_database_with_files(blog, blog.story_set.all(), Story.folder)
+    post_ids = set([])
+    for post in blog.post_set.all():
+        post_ids.add(str(post.id))
+        if post.dirty or not os.path.exists(post.path()):
+            needs_build = True
+            post.dirty=False
+            post.save_to_disk()
+
+    post_folder = os.path.join(blog.path(), Post.folder)
+    for fname in os.listdir(post_folder):
+        if fname.split('.')[0] not in post_ids:
+            needs_build = True
+            os.unlink(os.path.join(post_folder, fname))
 
     stores = [blog.galleries, blog.static] + list(blog.stores.all())
     for s in stores:
@@ -289,31 +292,6 @@ def blog_sync(blog_id):
 
     if needs_build:
         build_blog(blog_id)
-
-
-def _syncronize_database_with_files(blog, content_list, folder):
-    content_ids = _generate_files_for_new_content(content_list)
-    _remove_deleted_content(blog, content_ids, folder)
-
-
-def _generate_files_for_new_content(content_list):
-    content_ids = set([])
-    for content in content_list:
-        content_ids.add(str(content.id))
-        if content.dirty or not os.path.exists(content.path()):
-            needs_build = True
-            content.dirty = False
-            content.save_to_disk()
-    return content_ids
-
-
-def _remove_deleted_content(blog, content_ids, folder):
-    content_folder = os.path.join(blog.path(), folder)
-    for fname in os.listdir(content_folder):
-        if fname.split('.')[0] not in content_ids:
-            needs_build = True
-            os.unlink(os.path.join(content_folder, fname))
-
 
 def build_blog(blog_id):
     blog = Blog.objects.get(id=blog_id)
