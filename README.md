@@ -1,8 +1,8 @@
 Prerequisites
 ----
-Make sure you have `reddis-server` installed or you cannot start the scheduler and a worker.
+Make sure you have `redis-server` installed or you cannot start the scheduler and a worker.
 
-To install `reddis-server` on Ubuntu, run the command below:
+To install `redis-server` on Ubuntu, run the command below:
 
 ```
 sudo apt-get install redis-server
